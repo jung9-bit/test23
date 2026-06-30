@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2024년 모바일 예선 기출문제</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #app {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        /* 1단계: 정보 입력 로그인 화면 디자인 */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            padding: 30px 24px;
+            height: 100%;
+            justify-content: space-between;
+            background-color: #ffffff;
+        }
+        .login-header-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .login-form-group {
+            margin-bottom: 24px;
+        }
+        .login-form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+        .login-form-group select, .login-form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 16px;
+            color: #333;
+            background-color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .login-form-group select:focus, .login-form-group input:focus {
+            border-color: #2563eb;
+        }
+        .login-form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23707070'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 18px;
+        }
+        .btn-login-submit {
+            background-color: #2563eb;
+            color: #ffffff;
+            width: 100%;
+            padding: 18px 0;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        /* 2단계: 연습 시작 대기 브릿지 화면 */
+        .bridge-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            height: 100%;
+            text-align: center;
+            background-color: #f8fafc;
+        }
+        .bridge-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px 20px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        .btn-start-practice {
+            background-color: #10b981;
+            color: white;
+            width: 100%;
+            padding: 18px 0;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 3단계: 메인 문제 풀이 전체 화면 컨테이너 */
+        .exam-main-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .header {
+            padding: 15px 20px;
+            background-color: #f0f4fc;
+            border-bottom: 1px solid #e0e8f5;
+            position: relative;
+            z-index: 10;
+        }
+        .dropdown-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: 1px solid #dcdfe6;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            color: #3f51b5;
+        }
+        .dropdown-btn::after {
+            content: '▼';
+            font-size: 12px;
+            color: #707070;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 75px; left: 20px; right: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dcdfe6;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 350px;
+            overflow-y: auto;
+            flex-direction: column;
+            padding: 8px 0;
+            z-index: 60;
+        }
+        .dropdown-menu.active { display: flex; }
+        .dropdown-item {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            color: #333;
+        }
+        .dropdown-item.saved {
+            background-color: #e8eaf6;
+            color: #3f51b5;
+            font-weight: bold;
+        }
+        .dropdown-footer-btn {
+            background-color: #3f51b5;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 0 0 11px 11px;
+        }
+
+        /* 문제 디스플레이 컨텐츠 */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .question-box {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            word-break: keep-all;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-btn {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            line-height: 1.4;
+            transition: all 0.2s;
+        }
+        .option-btn.selected {
+            border-color: #2563eb;
+            background-color: #f0f6ff;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        /* 서술형 및 실무 특수 컴포넌트 */
+        .subjective-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-top: 10px;
+            outline: none;
+        }
+        .subjective-input:focus {
+            border-color: #2563eb;
+        }
+        .task-box {
+            background-color: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .task-app-btn {
+            background-color: #ff9800;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(255, 152, 0, 0.2);
+        }
+        .q-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* 가상 단독 앱 시뮬레이터 */
+        .fullscreen-app-layer {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ffffff;
+            z-index: 50;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .app-header {
+            color: white; padding: 15px; font-weight: bold; margin-bottom: 20px; text-align: center; border-radius: 8px; font-size: 18px;
+        }
+        .task-input-group { margin-bottom: 18px; }
+        .task-input-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #1e293b; }
+        .task-input-group input, .task-input-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; }
+        
+        /* 정부24 스타일 서식 라디오/체크박스 컨테이너 */
+        .gov-section-box {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .gov-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .gov-row input[type="checkbox"], .gov-row input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* 하단 컨트롤러 바 */
+        .footer {
+            padding: 15px 20px;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 15px 0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-status { background-color: #e2e8f0; color: #4a5568; }
+        .btn-save { background-color: #2563eb; color: #ffffff; }
+        .btn-next { background-color: #0f172a; color: #ffffff; }
+        .btn-prev { background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+
+        /* 토스트 알림 안내 */
+        .toast-msg {
+            position: absolute;
+            bottom: 90px; left: 50%; transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff; padding: 10px 20px; border-radius: 30px;
+            font-size: 14px; z-index: 110; display: none; pointer-events: none;
+        }
+
+        /* 정답 모달 */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }
+        .status-list { display: flex; flex-direction: column; overflow-y: auto; flex: 1; margin-bottom: 15px; }
+        .status-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; cursor: pointer; }
+        .status-row.done { color: #2563eb; font-weight: bold; background-color: #f0f6ff; }
+        .btn-submit { background-color: #d32f2f; color: white; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 8px; text-align: center; }
+        .modal-close { background-color: #707070; color: white; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
+
+        /* 완결 화면 */
+        .finish-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 20px;
+            height: 100%;
+            background-color: #ffffff;
+            overflow-y: auto;
+        }
+        .finish-icon { font-size: 54px; color: #4caf50; margin-bottom: 10px; }
+        .finish-title { font-size: 22px; font-weight: bold; color: #1e3a8a; margin-bottom: 10px; }
+        .finish-text { font-size: 15px; color: #4a5568; line-height: 1.5; margin-bottom: 20px; text-align: center; }
+        .result-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; padding: 16px; width: 100%; margin-bottom: 20px; text-align: left; }
+        .result-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; border-bottom: 1px dashed #e2e8f0; }
+        .result-row:last-child { border-bottom: none; }
+        
+        .btn-check-answers {
+            background-color: #3f51b5;
+            color: #ffffff;
+            width: 100%;
+            padding: 16px 0;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(63, 81, 181, 0.15);
+        }
+
+        .report-section {
+            display: none;
+            width: 100%;
+            margin-top: 10px;
+            border-top: 2px solid #3f51b5;
+            padding-top: 20px;
+        }
+        .report-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .report-table th, .report-table td {
+            padding: 10px 6px;
+            border: 1px solid #cbd5e1;
+            word-break: keep-all;
+        }
+        .report-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            color: #334155;
+        }
+        .report-table tr.wrong-row {
+            background-color: #fff1f2;
+            color: #e11d48;
+            font-weight: bold;
+        }
+        .report-table tr.wrong-row td {
+            border-color: #fca5a5;
+        }
+        .text-correct { color: #16a34a; font-weight: bold; }
+        .text-wrong { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    
+    <div class="login-screen" id="loginScreen">
+        <div>
+            <div class="login-header-title">2024년 모바일 예선 기출문제</div>
+            
+            <div class="login-form-group">
+                <label>1. 참가부문</label>
+                <select id="userCategory">
+                    <option value="" disabled selected>참가 부문을 선택하세요</option>
+                    <option value="고령층">고령층</option>
+                    <option value="장년층">장년층</option>
+                    <option value="다문화">다문화</option>
+                </select>
+            </div>
+
+            <div class="login-form-group">
+                <label>2. 접수번호</label>
+                <input type="text" id="userRegNo" placeholder="영문자 및 숫자 9자리" maxlength="9">
+            </div>
+
+            <div class="login-form-group">
+                <label>3. 성명</label>
+                <input type="text" id="userName" placeholder="참가자 본인 성명">
+            </div>
+        </div>
+        
+        <button class="btn-login-submit" onclick="validateAndMoveToBridge()">시험 입장하기 →</button>
+    </div>
+
+    <div class="bridge-screen" id="bridgeScreen">
+        <div class="bridge-card">
+            <h2 style="color:#1e3a8a; margin-bottom:15px; font-size:22px;">수험자 인증 확인</h2>
+            <p id="bridgeInfoText" style="font-size:16px; color:#475569; line-height:1.6;"></p>
+            <p style="margin-top:15px; font-size:14px; color:#ef4444; font-weight:bold;">※ 준비가 완료되면 아래 버튼을 눌러 시작하세요.</p>
+        </div>
+        <button class="btn-start-practice" onclick="startExamReal()">시험 연습 시작하기</button>
+    </div>
+
+    <div class="exam-main-container" id="examMainContainer">
+        <div class="header" id="mainHeader">
+            <div class="dropdown-btn" id="dropdownBtn" onclick="toggleDropdown()">문제 1</div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div id="dropdownItemsContainer" style="display: flex; flex-direction: column; overflow-y: auto;"></div>
+                <div class="dropdown-footer-btn" onclick="openStatusFromDropdown()">현황표 열기</div>
+            </div>
+        </div>
+
+        <div class="content" id="mainContent">
+            <div id="questionContent" class="question-container"></div>
+        </div>
+
+        <div class="footer" id="footerButtons"></div>
+    </div>
+
+    <div class="fullscreen-app-layer" id="fullscreenAppLayer"></div>
+
+    <div class="finish-screen" id="finishScreen">
+        <div class="finish-icon">✓</div>
+        <div class="finish-title">시험이 완료되었습니다!</div>
+        <div class="finish-text">
+            답안 제출이 정상적으로 완료되었습니다.<br>수고하셨습니다.
+        </div>
+        <div class="result-box">
+            <div class="result-row"><strong>응시 부문:</strong> <span id="finalCategory">-</span></div>
+            <div class="result-row"><strong>성명:</strong> <span id="finalName">-</span></div>
+            <div id="resSaved" class="result-row"><strong>저장된 답안:</strong> <span>0건</span></div>
+            <div id="resEmpty" class="result-row"><strong>미입력 문항:</strong> <span>21건</span></div>
+        </div>
+        
+        <button class="btn-check-answers" id="btnCheckAnswers" onclick="showAnswerReportTable()">정답 확인하기</button>
+        
+        <div class="report-section" id="reportSection">
+            <div class="report-title">📊 기출문제 채점 및 정답 비교표</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">번호</th>
+                        <th style="width: 35%;">내가 선택/적은 답</th>
+                        <th style="width: 35%;">실제 정답 기준</th>
+                        <th style="width: 15%;">결과</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody"></tbody>
+            </table>
+        </div>
+
+        <p style="color:#a0aec0; font-size:12px; width:100%; text-align:center; margin-bottom:20px;">본 프로그램은 시뮬레이션용 기출 연습 도구입니다.</p>
+    </div>
+
+    <div class="toast-msg" id="toastMsg">답안이 저장되었습니다.</div>
+</div>
+
+<div class="modal" id="statusModal">
+    <div class="modal-content">
+        <div class="modal-header">정답 제출 현황표</div>
+        <div class="status-list" id="statusList"></div>
+        <button class="btn-submit" onclick="submitExam()">제출하기</button>
+        <button class="modal-close" onclick="closeModal()">닫기</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { id: 1, type: 'choice', q: "다음 중 2024 파리 올림픽 경기 종목이 아닌 것을 찾아보세요.", options: ["라크로스", "브레이킹", "서핑", "스케이트보드", "스포츠클라이밍"], answer: 1 },
+        { id: 2, type: 'choice', q: "대한축구협회 축구국가대표팀의 새로운 마스코트는 다양한 동물들을 모티브한 5종의 캐릭터입니다. 다음 중에서 골키퍼의 이름을 찾아보세요.", options: ["백호", "진두", "티키", "타카", "휘"], answer: 5 },
+        { id: 3, type: 'choice', q: "제77회 칸영화제의 황금종려상 수상작의 감독이름을 찾아보세요.", options: ["미겔 고미쉬(Miguel Gomes)", "션 베이커(Sean Baker)", "자크 오디아드(Jacques Audiard)", "코랄리 파르쟈(Coralie Fargeat)", "파얄 카파디아(Payal Kapadia)"], answer: 2 },
+        { id: 4, type: 'choice', q: "다음 중 창덕궁에 있는 천연기념물이 아닌 것을 찾아보세요.", options: ["다래나무", "뽕나무", "측백나무", "향나무", "회화나무 군(群)"], answer: 3 },
+        { id: 5, type: 'choice', q: "다음 중 온양민속박물관에 대한 설명 중 틀린 것은 어느 것이지 찾아보세요.", options: ["온양민속박물관은 1978년 10월 25일에 개관하였다.", "구정아트센터는 온양민속박물관 설립자의 호(구정)를 따서 지은 건축물이다.", "온양민속박물관 개관 45주년 특별전 제목은 '곳간과 두리반'이다.", "휠체어를 타고 온양민속박물관에 오신 관람객은 무료입장 가능하다.", "대체공휴일인 2024년 5월 6일(월)은 온양민속박물관의 휴관일이다."], answer: 5 },
+        { id: 6, type: 'choice', q: "해양수산부는 2024년 7월의 등대, 무인도서, 수산물, 어촌여행지, 해양생물을 선정하였습니다. 다음 중 옳지 않은 것을 찾아보세요.", options: ["7월의 등대 : 청사포어항동방파제등대", "7월의 무인도서 : 대손대도", "7월의 수산물 : 민어, 한치", "7월의 어촌 여행지 : 김녕마을, 종현마을", "7월의 해양생물 : 까치상어"], answer: 4 },
+        { id: 7, type: 'choice', q: "한국철도공사(코레일)는 '철도의 날'을 맞아 '한국철도 기네스 30선'을 선정했습니다. 한국철도 기네스 30선의 내용으로 옳지 않은 것을 찾아보세요.", options: ["광명역 : 규모가 가장큰역", "백마고지역: 最북단 역", "영일만항역: 바다와 가장 가까운 역", "추전역: 고도가 제일 높은 역", "춘포역 : 국내에서 현존하는 가장 오래된 역"], answer: 3 },
+        { id: 8, type: 'choice', q: "2024년은 한국-그레나다 수교 50주년입니다. 한국과 그레나다의 수교일을 찾아보세요.", options: ["2월 7일", "3월 13일", "5월 9일", "8월 1일", "9월 20일"], answer: 4 },
+        { id: 9, type: 'choice', q: "서울야외도서관은 도심 속 자연과 문화가 만나는 공간으로 자유로움과 지적인 즐거움이 어우러지는 스토리 파크입니다. 서울야외도서관의 이용시 주의사항으로 옳지 않은 것을 찾아보세요.", options: ["비치된 도서는 누구나 자유롭게 열람 가능합니다.", "책은 깨끗하게 이용해주시고 보신 후에는 원래 서가에 꽂아 주세요.", "간단한 음료와 다과 외 음식 섭취는 금지합니다.", "다른 사람의 이용에 지장을 주는 행위는 하지 않습니다.", "반려동물은 동반 입장이 가능합니다."], answer: 5 },
+        { id: 10, type: 'choice', q: "다음 우리말에 대한 설명으로 옳지 않은 것을 찾아보세요.", options: ["사로자다 : 염려가 되어 마음을 놓지 못하고 조바심하며 자다.", "생게망게하다: 예의를 지키지 않으며 삼가고 조심하는 것이 없다.", "안쫑잡다 : 겉가량으로 헤아리다.", "잠포록하다: 날이 흐리고 바람기가 없다.", "푼푼하다: 모자람이 없이 넉넉하다."], answer: 2 },
+        { id: 11, type: 'choice', q: "다음 중 괌(GUM)과 직항으로 민간 항공편이 연결되지 않은 지역은 어디 인지 찾아보세요.", options: ["Honolulu(호놀룰루)", "Manila, Philippines (마닐라, 필리핀)", "Saipan(사이판)", "San Francisco(샌프란시스코)", "추크(Chuuk)"], answer: 4 },
+        { id: 12, type: 'choice', q: "다음 중 정선아리랑열차의 정차역이 아닌 곳을 찾아보세요.", options: ["민둥산역", "쌍룡역", "영월역", "예미역", "제천역"], answer: 2 },
+        { id: 13, type: 'choice', q: "인천국제공항에서 출발해서 세종고속시외버스터미널에 도착하는 리무진(우등) 버스의 일반요금(할인없음, 2024년 7월 기준)을 찾아보세요.", options: ["16,100원", "21,200원", "24,500원", "25,500원", "29,500원"], answer: 4 },
+        { id: 14, type: 'choice', q: "2023년 발생한 지진 중 가장 강력한 지진이 발생한 곳을 찾아보세요.", options: ["강원 동해시 북동쪽 52km 해역", "경북 경주시 동남동쪽 19km 지역", "인천 강화군 서쪽 25km 해역", "전북 부안군 남남서쪽 4km 지역", "전북 장수군 북쪽 17km 지역"], answer: 1 },
+        { id: 15, type: 'choice', q: "다음 중 버스정류장 번호 40246(울산)과 가장 가까운 곳을 찾아보세요.", options: ["외솔기념관", "울산대공원", "울산암각화박물관", "태화강 국가정원", "태화강생태관"], answer: 5 },
+        { id: 16, type: 'choice', q: "대전광역시 중구에 있는 백년가게(중소벤처기업부에서 공식 인증받은 점포) 중 돌솥밥한정식을 판매하는 곳을 찾아가려고 합니다. 다음 중 가장 가까운 출구 번호를 찾아보세요.", options: ["중앙로역 1번 출구", "중앙로역 3번 출구", "중앙로역 6번 출구", "중앙로역 8번 출구", "중앙로역 9번 출구"], answer: 3 },
+        { id: 17, type: 'choice', q: "출국납부금은 국내 공항과 항만을 통해 해외로 출국하는 내외국인을 대상으로 징수하는 부담금입니다. 2024년 7월 기준 출국납부금은 얼마인지 찾아보세요.", options: ["3,000원", "5,000원", "7,000원", "10,000원", "15,000원"], answer: 3 },
+        { id: 18, type: 'subjective', q: "(주관식) 말레이시아 쿠알라룸푸르의 아시아축구연맹(AFC) 본부에서 진행된 2026 북중미 월드컵 아시아 3차 예선 조추첨 결과 6월 피파(FIFA) 랭킹 22위인 한국은 중동의 5개국과 같은 조에 편성되었습니다. 한국이 포함된 조 6개국의 2024년 6월 피파(FIFA) 랭킹을 더하기한 값을 적으세요(숫자).", answer: "453" },
+        { id: 19, type: 'subjective', q: "(주관식) 국립중앙박물관에서 소장하고 있는 소장품 번호 \"본관 12850\"은 국가지정 보물 문화재입니다. 이 문화재는 누구의 얼굴을 그린 초상화인지 성명을 한자로 찾아 입력해 주세요(한자).", answer: "沈得經" },
+        { id: 20, type: 'task20', q: "(작업형) \"NIA Money\" 아이콘을 누르고 작업을 시작합니다. NIA Money에 등록한 YOUNG 은행의 계좌에서 1만 엔(JPY)을 환전(충전) 하려고 합니다. 간편 비밀번호는 「864375」 입니다. 외화 머니 충전 완료 후 '홈으로' 단추를 눌러 작업을 완료 합니다.", answer: "작업형" },
+        { id: 21, type: 'task21', q: "(실무형) 홍길동님은 정부24에서 홍길동님 가족의 주민등록등본을 신청하여 집에서 프린터로 출력하려고 합니다. 최근 5년 동안의 주소 변동사항을 포함하여 아래의 정보가 표기되도록 발급 문서에 표시할 정보를 선택하여 작업을 완성하십시오.", answer: "5 세대 구성 일자 교부대상자 외 세대주, 세대원, 외국인 등의 이름 세대원 온라인발급(본인출력)", hasImage: true }
+    ];
+
+    let currentIdx = 0; 
+    let savedAnswers = {}; 
+    let userData = { category: '', regNo: '', name: '' };
+
+    // 정부24 체크 상태 관리용 임시 상태 객체
+    let govFormState = {
+        pastAddress: '',
+        compInfo: [],
+        memberInfo: [],
+        residentNo: '',
+        receiveMethod: ''
+    };
+
+    window.onload = function() {
+        initDropdownMenu();
+    };
+
+    function validateAndMoveToBridge() {
+        const cat = document.getElementById('userCategory').value;
+        const reg = document.getElementById('userRegNo').value.trim();
+        const name = document.getElementById('userName').value.trim();
+
+        if(!cat) { alert('참가 부문을 선택해 주세요.'); return; }
+        if(!reg) { alert('접수 번호를 입력해 주세요.'); return; }
+        if(!name) { alert('성명을 입력해 주세요.'); return; }
+
+        userData.category = cat;
+        userData.regNo = reg;
+        userData.name = name;
+
+        document.getElementById('bridgeInfoText').innerHTML = `
+            반갑습니다, <strong>${name}</strong> 님!<br>
+            선택 부문: <strong>${cat}</strong> | 접수 번호: <strong>${reg}</strong>
+        `;
+
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('bridgeScreen').style.display = 'flex';
+    }
+
+    function startExamReal() {
+        document.getElementById('bridgeScreen').style.display = 'none';
+        document.getElementById('examMainContainer').style.display = 'flex';
+        renderQuestion();
+    }
+
+    function initDropdownMenu() {
+        const container = document.getElementById('dropdownItemsContainer');
+        container.innerHTML = '';
+        questions.forEach((q, idx) => {
+            const item = document.createElement('div');
+            item.className = 'dropdown-item';
+            item.id = `dd-item-${q.id}`;
+            item.innerText = `문제 ${q.id}`;
+            item.onclick = () => {
+                currentIdx = idx;
+                renderQuestion();
+                toggleDropdown();
+            };
+            container.appendChild(item);
+        });
+    }
+
+    function toggleDropdown() {
+        document.getElementById('dropdownMenu').classList.toggle('active');
+    }
+
+    function openStatusFromDropdown() {
+        toggleDropdown();
+        openModal();
+    }
+
+    function renderQuestion() {
+        const currentQ = questions[currentIdx];
+        document.getElementById('dropdownBtn').innerText = `문제 ${currentQ.id}`;
+        
+        questions.forEach(q => {
+            const item = document.getElementById(`dd-item-${q.id}`);
+            if(savedAnswers[q.id] !== undefined && savedAnswers[q.id] !== '') {
+                item.classList.add('saved');
+            } else {
+                item.classList.remove('saved');
+            }
+        });
+
+        document.getElementById('fullscreenAppLayer').style.display = 'none';
+        const container = document.getElementById('questionContent');
+        container.innerHTML = '';
+
+        const qBox = document.createElement('div');
+        qBox.className = 'question-box';
+        qBox.innerText = `[문제 ${currentQ.id}] ${currentQ.q}`;
+        
+        // 21번 문제일 때 변형 기출용 이미지 추가
+        if(currentQ.hasImage) {
+            const img = document.createElement('img');
+            img.src = 'image_65333a.png';
+            img.className = 'q-image';
+            img.alt = '주민등록등본 출력 서식';
+            qBox.appendChild(img);
+        }
+        
+        container.appendChild(qBox);
+
+        if (currentQ.type === 'choice') {
+            const optContainer = document.createElement('div');
+            optContainer.className = 'options-container';
+            
+            currentQ.options.forEach((opt, oIdx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                if (savedAnswers[currentQ.id] === (oIdx + 1)) {
+                    btn.classList.add('selected');
+                }
+                btn.innerText = `①②③④⑤`[oIdx] + ` ${opt}`;
+                btn.onclick = () => {
+                    const buttons = optContainer.querySelectorAll('.option-btn');
+                    buttons.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    savedAnswers[currentQ.id] = oIdx + 1;
+                };
+                optContainer.appendChild(btn);
+            });
+            container.appendChild(optContainer);
+
+        } else if (currentQ.type === 'subjective') {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'subjective-input';
+            input.placeholder = '여기에 정답을 입력하세요.';
+            input.value = savedAnswers[currentQ.id] || '';
+            input.oninput = (e) => {
+                savedAnswers[currentQ.id] = e.target.value;
+            };
+            container.appendChild(input);
+
+        } else if (currentQ.type === 'task20' || currentQ.type === 'task21') {
+            const taskIntroBox = document.createElement('div');
+            taskIntroBox.className = 'task-box';
+            
+            const btnName = currentQ.type === 'task20' ? 'NIA Money 실행하기' : '정부24 통합 신청 모듈 실행';
+            taskIntroBox.innerHTML = `
+                <p style="margin-bottom:15px; color:#64748b; font-size:14px;">아래 버튼을 누르면 가상 스마트폰 시뮬레이터 프로그램이 실행됩니다.</p>
+                <button class="task-app-btn" onclick="openFullscreenApp('${currentQ.type}')">${btnName}</button>
+            `;
+            container.appendChild(taskIntroBox);
+        }
+
+        renderFooterButtons();
+    }
+
+    function openFullscreenApp(type) {
+        const appLayer = document.getElementById('fullscreenAppLayer');
+        appLayer.innerHTML = '';
+        appLayer.style.display = 'flex';
+
+        if(type === 'task20') {
+            appLayer.innerHTML = `
+                <div class="app-header" style="background:#4caf50;">NIA Money 외화 환전 충전 앱</div>
+                <div style="flex:1; overflow-y:auto; padding: 5px;">
+                    <div class="task-input-group"><label>출금 연동 계좌</label><select id="bankSelect"><option>YOUNG 은행 계좌</option></select></div>
+                    <div class="task-input-group"><label>환전 신청 통화</label><select id="currencySelect"><option>일본 엔화 (JPY)</option></select></div>
+                    <div class="task-input-group"><label>환전 금액</label><input type="text" id="moneyAmount" value="10000" readonly style="background:#f1f5f9; color:#64748b;"></div>
+                    <div class="task-input-group"><label>간편 비밀번호 입력 (6자리)</label><input type="password" id="simplePw" maxlength="6" placeholder="비밀번호 6자리 입력"></div>
+                </div>
+                <div class="footer" style="padding:10px 0 0 0; border-top:1px solid #e2e8f0;"><button class="btn btn-prev" onclick="closeFullscreenApp()">취소(돌아가기)</button><button class="btn btn-save" style="background:#4caf50;" onclick="submitTask20()">홈으로 (충전완료)</button></div>
+            `;
+            if(savedAnswers[20] === '작업형') {
+                document.getElementById('simplePw').value = '864375';
+            }
+        } else if(type === 'task21') {
+            // 첨부 파일 디자인 양식을 그대로 반영한 모바일 신청식 체크박스 레이아웃 생성
+            appLayer.innerHTML = `
+                <div class="app-header" style="background:#0f4c81;">정부24 주민등록등본 교부 신청</div>
+                <div style="flex:1; overflow-y:auto; padding: 5px; display:flex; flex-direction:column; gap:14px;">
+                    
+                    <div class="task-input-group">
+                        <label>◆ 과거의 주소 변동 사항</label>
+                        <div class="gov-section-box">
+                            <label class="gov-row"><input type="radio" name="govAddr" value="전체포함"> 전체 포함</label>
+                            <label class="gov-row"><input type="radio" name="govAddr" value="5" id="radAddr5"> 최근 5년 포함</label>
+                            <label class="gov-row"><input type="radio" name="govAddr" value="미포함"> 미포함</label>
+                        </div>
+                    </div>
+
+                    <div class="task-input-group">
+                        <label>◆ 세대 구성 정보</label>
+                        <div class="gov-section-box">
+                            <label class="gov-row"><input type="checkbox" name="govComp" value="세대 구성 사유"> 세대 구성 사유</label>
+                            <label class="gov-row"><input type="checkbox" name="govComp" value="세대 구성 일자" id="chkGovCompDate"> 세대 구성 일자</label>
+                        </div>
+                    </div>
+
+                    <div class="task-input-group">
+                        <label>◆ 세대 구성원 정보</label>
+                        <div class="gov-section-box">
+                            <label class="gov-row"><input type="checkbox" name="govMember" value="세대주와의 관계"> 세대주와의 관계</label>
+                            <label class="gov-row"><input type="checkbox" name="govMember" value="동거인"> 동거인</label>
+                            <label class="gov-row"><input type="checkbox" name="govMember" value="교부대상자 외 세대주, 세대원, 외국인 등의 이름" id="chkGovNames"> 교부대상자 외 세대주, 세대원, 외국인 등의 이름</label>
+                        </div>
+                    </div>
+
+                    <div class="task-input-group">
+                        <label>◆ 주민등록번호 뒷자리 표기</label>
+                        <div class="gov-section-box">
+                            <label class="gov-row"><input type="radio" name="govResident" value="전체"> 전체 표기</label>
+                            <label class="gov-row"><input type="radio" name="govResident" value="본인"> 본인만 표기</label>
+                            <label class="gov-row"><input type="radio" name="govResident" value="세대원" id="radGovMembers"> 세대원만 표기</label>
+                            <label class="gov-row"><input type="radio" name="govResident" value="미표기"> 미표기</label>
+                        </div>
+                    </div>
+
+                    <div class="task-input-group">
+                        <label>◆ 수령 방법 선택</label>
+                        <select id="govReceiveMethod" style="padding:12px; border-radius:8px;">
+                            <option value="">수령 방법을 선택하세요</option>
+                            <option value="온라인발급(본인출력)">온라인발급(본인출력)</option>
+                            <option value="온라인발급(전자문서지갑)">온라인발급(전자문서지갑)</option>
+                            <option value="우편수령">일반 우편 수령</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="footer" style="padding:10px 0 0 0; border-top:1px solid #e2e8f0;">
+                    <button class="btn btn-prev" onclick="closeFullscreenApp()">취소(돌아가기)</button>
+                    <button class="btn btn-save" style="background:#0f4c81;" onclick="submitGovForm21()">민원 신청하기</button>
+                </div>
+            `;
+
+            // 기존에 누른 이력이 있으면 화면에 복원
+            if(govFormState.pastAddress) {
+                if(document.getElementById('radAddr5') && govFormState.pastAddress === '5') document.getElementById('radAddr5').checked = true;
+                if(document.getElementById('chkGovCompDate')) document.getElementById('chkGovCompDate').checked = govFormState.compInfo.includes('세대 구성 일자');
+                if(document.getElementById('chkGovNames')) document.getElementById('chkGovNames').checked = govFormState.memberInfo.includes('교부대상자 외 세대주, 세대원, 외국인 등의 이름');
+                if(document.getElementById('radGovMembers') && govFormState.residentNo === '세대원') document.getElementById('radGovMembers').checked = true;
+                if(document.getElementById('govReceiveMethod')) document.getElementById('govReceiveMethod').value = govFormState.receiveMethod;
+            }
+        }
+    }
+
+    function closeFullscreenApp() { document.getElementById('fullscreenAppLayer').style.display = 'none'; }
+
+    function submitTask20() {
+        const pw = document.getElementById('simplePw').value;
+        if(pw === '864375') {
+            alert('외화 머니 충전이 완료되었습니다.');
+            savedAnswers[20] = '작업형';
+            closeFullscreenApp();
+            renderQuestion();
+        } else { alert('간편 비밀번호가 지문 조건과 일치하지 않습니다.'); }
+    }
+
+    // 정부24 모듈 선택값 가공 및 제출 연동 함수
+    function submitGovForm21() {
+        const addrRadio = document.querySelector('input[name="govAddr"]:checked');
+        const compCheckboxes = document.querySelectorAll('input[name="govComp"]:checked');
+        const memberCheckboxes = document.querySelectorAll('input[name="govMember"]:checked');
+        const residentRadio = document.querySelector('input[name="govResident"]:checked');
+        const receiveMethodSelect = document.getElementById('govReceiveMethod').value;
+
+        // 선택값 기억용 데이터 갱신
+        govFormState.pastAddress = addrRadio ? addrRadio.value : '';
+        govFormState.compInfo = Array.from(compCheckboxes).map(c => c.value);
+        govFormState.memberInfo = Array.from(memberCheckboxes).map(c => c.value);
+        govFormState.residentNo = residentRadio ? residentRadio.value : '';
+        govFormState.receiveMethod = receiveMethodSelect;
+
+        // 채점 기준 스트링과 비교 가능한 포맷 문자열로 변합
+        let answerPiece = [];
+        if(govFormState.pastAddress) answerPiece.push(govFormState.pastAddress);
+        govFormState.compInfo.forEach(val => answerPiece.push(val));
+        govFormState.memberInfo.forEach(val => answerPiece.push(val));
+        if(govFormState.residentNo) answerPiece.push(govFormState.residentNo);
+        if(govFormState.receiveMethod) answerPiece.push(govFormState.receiveMethod);
+
+        const buildUserAnswer = answerPiece.join(' ');
+        
+        if(!govFormState.pastAddress || answerPiece.length < 3 || !receiveMethodSelect) {
+            alert('설정 항목을 모두 확인하고 선택해 주세요.');
+            return;
+        }
+
+        savedAnswers[21] = buildUserAnswer;
+        alert('주민등록등본 발급 서식 선택이 완료되었습니다.');
+        closeFullscreenApp();
+        renderQuestion();
+    }
+
+    function renderFooterButtons() {
+        const currentQ = questions[currentIdx];
+        const footer = document.getElementById('footerButtons');
+        footer.innerHTML = '';
+
+        if (currentQ.id === 1) {
+            footer.innerHTML = `
+                <button class="btn btn-status" onclick="openModal()">현황표</button>
+                <button class="btn btn-save" onclick="saveBtnSilent()">답안저장</button>
+                <button class="btn btn-next" onclick="moveNext()">다음</button>
+            `;
+        } else {
+            footer.innerHTML = `
+                <button class="btn btn-prev" onclick="movePrev()">이전</button>
+                <button class="btn btn-save" onclick="saveBtnSilent()">답안저장</button>
+                <button class="btn btn-next" onclick="moveNext()">다음</button>
+            `;
+        }
+    }
+
+    function saveBtnSilent() {
+        const toast = document.getElementById('toastMsg');
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 1500);
+        renderQuestion();
+    }
+
+    function moveNext() {
+        if (currentIdx < questions.length - 1) {
+            currentIdx++;
+            renderQuestion();
+        } else { openModal(); }
+    }
+
+    function movePrev() {
+        if (currentIdx > 0) { currentIdx--; renderQuestion(); }
+    }
+
+    function openModal() {
+        const listContainer = document.getElementById('statusList');
+        listContainer.innerHTML = '';
+
+        questions.forEach((q, idx) => {
+            const row = document.createElement('div');
+            row.className = 'status-row';
+            let statusText = '미입력';
+            let hasData = false;
+
+            if(q.type === 'choice') {
+                if(savedAnswers[q.id]) { statusText = `답 ${savedAnswers[q.id]}번`; hasData = true; }
+            } else if(q.type === 'subjective') {
+                if(savedAnswers[q.id] && savedAnswers[q.id].trim() !== '') { statusText = `입력완료 (${savedAnswers[q.id]})`; hasData = true; }
+            } else if(q.type === 'task20') {
+                if(savedAnswers[20] === '작업형') { statusText = '작업 완료'; hasData = true; }
+            } else if(q.type === 'task21') {
+                if(savedAnswers[21] && savedAnswers[21] !== '') { statusText = '신청 설정완료'; hasData = true; }
+            }
+
+            if(hasData) row.classList.add('done');
+            row.innerHTML = `<span style="font-weight:bold;">문제 ${q.id}</span><span>${statusText}</span>`;
+            row.onclick = () => { currentIdx = idx; closeModal(); renderQuestion(); };
+            listContainer.appendChild(row);
+        });
+
+        document.getElementById('statusModal').classList.add('active');
+    }
+
+    function closeModal() { document.getElementById('statusModal').classList.remove('active'); }
+
+    function submitExam() {
+        if(!confirm("정말로 답안을 제출하고 시험을 종료하시겠습니까?\n제출 후에는 수정할 수 없습니다.")) return;
+
+        let savedCount = 0;
+        questions.forEach(q => {
+            if(savedAnswers[q.id] !== undefined && savedAnswers[q.id].toString().trim() !== '') savedCount++;
+        });
+        let emptyCount = questions.length - savedCount;
+
+        closeModal();
+        document.getElementById('examMainContainer').style.display = 'none';
+        document.getElementById('fullscreenAppLayer').style.display = 'none';
+
+        document.getElementById('finalCategory').innerText = userData.category;
+        document.getElementById('finalName').innerText = userData.name;
+        document.getElementById('resSaved').querySelector('span').innerText = `${savedCount}건`;
+        document.getElementById('resEmpty').querySelector('span').innerText = `${emptyCount}건`;
+        
+        document.getElementById('finishScreen').style.display = 'flex';
+        alert('제출이 완료되었습니다. 채점표 결과를 확인하세요.');
+    }
+
+    function showAnswerReportTable() {
+        const tbody = document.getElementById('reportTableBody');
+        tbody.innerHTML = ''; 
+
+        questions.forEach(q => {
+            const tr = document.createElement('tr');
+            
+            let userAnsRaw = savedAnswers[q.id];
+            let userAnsText = '미입력';
+            let isCorrect = false;
+
+            if(userAnsRaw !== undefined && userAnsRaw !== '') {
+                if(q.type === 'choice') {
+                    userAnsText = `${userAnsRaw}번`;
+                    isCorrect = (parseInt(userAnsRaw) === q.answer);
+                } else if(q.type === 'subjective') {
+                    userAnsText = userAnsRaw.toString().trim();
+                    isCorrect = (userAnsText.toLowerCase() === q.answer.toString().toLowerCase());
+                } else if(q.type === 'task20') {
+                    userAnsText = '작업형 완료';
+                    isCorrect = true;
+                } else if(q.type === 'task21') {
+                    userAnsText = userAnsRaw.length > 20 ? userAnsRaw.substring(0, 18) + '...' : userAnsRaw;
+                    // 실제 정답 문자열 배열 조각 매칭 검사
+                    isCorrect = (userAnsRaw.trim() === q.answer.trim());
+                }
+            }
+
+            let correctAnsText = '';
+            if(q.type === 'choice') {
+                correctAnsText = `①②③④⑤`[q.answer - 1] || `${q.answer}번`;
+            } else if(q.type === 'subjective') {
+                correctAnsText = q.answer;
+            } else if(q.type === 'task20') {
+                correctAnsText = '비밀번호 864375';
+            } else if(q.type === 'task21') {
+                correctAnsText = '5년 / 구성일자 / 전체이름 / 세대원 / 본인출력';
+            }
+
+            let resultColumn = '';
+            if(isCorrect) {
+                resultColumn = `<span class="text-correct">O</span>`;
+            } else {
+                resultColumn = `<span class="text-wrong">X</span>`;
+                tr.className = 'wrong-row'; 
+            }
+
+            tr.innerHTML = `
+                <td><strong>${q.id}</strong></td>
+                <td style="font-size:12px;">${userAnsText}</td>
+                <td style="font-size:12px;">${correctAnsText}</td>
+                <td>${resultColumn}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('reportSection').style.display = 'block';
+        document.getElementById('btnCheckAnswers').style.display = 'none'; 
+        
+        setTimeout(() => {
+            document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+</script>
+</body>
+</html>
