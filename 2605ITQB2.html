@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보기술자격[ITQ] 인터넷 시험 연습 (B형)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #app {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        /* 1단계: 정보 입력 로그인 화면 디자인 */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            padding: 30px 24px;
+            height: 100%;
+            justify-content: space-between;
+            background-color: #ffffff;
+        }
+        .login-header-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .login-form-group {
+            margin-bottom: 24px;
+        }
+        .login-form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+        .login-form-group select, .login-form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 16px;
+            color: #333;
+            background-color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .login-form-group select:focus, .login-form-group input:focus {
+            border-color: #2563eb;
+        }
+        .login-form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23707070'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 18px;
+        }
+        .btn-login-submit {
+            background-color: #2563eb;
+            color: #ffffff;
+            width: 100%;
+            padding: 18px 0;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        /* 2단계: 연습 시작 대기 브릿지 화면 */
+        .bridge-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            height: 100%;
+            text-align: center;
+            background-color: #f8fafc;
+        }
+        .bridge-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px 20px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        .btn-start-practice {
+            background-color: #10b981;
+            color: white;
+            width: 100%;
+            padding: 18px 0;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 3단계: 메인 문제 풀이 전체 화면 컨테이너 */
+        .exam-main-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .header {
+            padding: 15px 20px;
+            background-color: #f0f4fc;
+            border-bottom: 1px solid #e0e8f5;
+            position: relative;
+            z-index: 10;
+        }
+        .dropdown-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: 1px solid #dcdfe6;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            color: #3f51b5;
+        }
+        .dropdown-btn::after {
+            content: '▼';
+            font-size: 12px;
+            color: #707070;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 75px; left: 20px; right: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dcdfe6;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 350px;
+            overflow-y: auto;
+            flex-direction: column;
+            padding: 8px 0;
+        }
+        .dropdown-menu.active { display: flex; }
+        .dropdown-item {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            color: #333;
+        }
+        .dropdown-item.saved {
+            background-color: #e8eaf6;
+            color: #3f51b5;
+            font-weight: bold;
+        }
+        .dropdown-footer-btn {
+            background-color: #3f51b5;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 0 0 11px 11px;
+        }
+
+        /* 문제 디스플레이 컨텐츠 */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .question-box {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            word-break: keep-all;
+            white-space: pre-wrap;
+        }
+        
+        /* [추가 요구사항 반영] 설명/지문 박스 스타일 정의 */
+        .info-description-box {
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 15px;
+            color: #334155;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            word-break: keep-all;
+            white-space: pre-wrap;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 5px;
+        }
+        .option-btn {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            line-height: 1.4;
+        }
+        .option-btn.selected {
+            border-color: #2563eb;
+            background-color: #f0f6ff;
+            font-weight: bold;
+        }
+
+        /* 서술형 및 실무 특수 컴포넌트 */
+        .subjective-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .subjective-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        /* 하단 컨트롤러 바 */
+        .footer {
+            padding: 15px 20px;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 15px 0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-status { background-color: #e2e8f0; color: #4a5568; }
+        .btn-save { background-color: #2563eb; color: #ffffff; }
+        .btn-next { background-color: #0f172a; color: #ffffff; }
+        .btn-prev { background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+
+        /* 정답 모달 */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }
+        .status-list { display: flex; flex-direction: column; overflow-y: auto; flex: 1; margin-bottom: 15px; }
+        .status-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; cursor: pointer; }
+        .status-row.done { color: #2563eb; font-weight: bold; background-color: #f0f6ff; }
+        .btn-submit { background-color: #d32f2f; color: white; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 8px; text-align: center; }
+        .modal-close { background-color: #707070; color: white; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
+
+        /* 완결 화면 */
+        .finish-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 20px;
+            height: 100%;
+            background-color: #ffffff;
+            overflow-y: auto;
+        }
+        .finish-icon { font-size: 54px; color: #4caf50; margin-bottom: 10px; }
+        .finish-title { font-size: 22px; font-weight: bold; color: #1e3a8a; margin-bottom: 10px; }
+        .finish-text { font-size: 15px; color: #4a5568; line-height: 1.5; margin-bottom: 20px; }
+        .result-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; padding: 16px; width: 100%; margin-bottom: 20px; text-align: left; }
+        .result-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; border-bottom: 1px dashed #e2e8f0; }
+        .result-row:last-child { border-bottom: none; }
+        
+        /* 정답 확인하기 버튼 */
+        .btn-check-answers {
+            background-color: #3f51b5;
+            color: #ffffff;
+            width: 100%;
+            padding: 16px 0;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(63, 81, 181, 0.15);
+        }
+
+        /* 정답 확인 결과 표 */
+        .report-section {
+            display: none;
+            width: 100%;
+            margin-top: 10px;
+            border-top: 2px solid #3f51b5;
+            padding-top: 20px;
+        }
+        .report-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .report-table th, .report-table td {
+            padding: 10px 4px;
+            border: 1px solid #cbd5e1;
+            word-break: keep-all;
+        }
+        .report-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            color: #334155;
+        }
+        .report-table tr.wrong-row {
+            background-color: #fff1f2;
+            color: #e11d48;
+            font-weight: bold;
+        }
+        .report-table tr.wrong-row td {
+            border-color: #fca5a5;
+        }
+        .text-correct { color: #16a34a; font-weight: bold; }
+        .text-wrong { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    
+    <div class="login-screen" id="loginScreen">
+        <div>
+            <div class="login-header-title">정보기술자격[ITQ] 인터넷 시험 (B형)</div>
+            
+            <div class="login-form-group">
+                <label>1. 참가부문 선택</label>
+                <select id="userCategory">
+                    <option value="다문화">참가부문 선택하시오</option>
+                    <option value="장년층.고령층">장년층.고령층</option>
+                    <option value="다문화">다문화</option>
+                </select>
+            </div>
+
+            <div class="login-form-group">
+                <label>2. 수험번호</label>
+                <input type="text" id="userRegNo" placeholder="숫자 9자리 입력" maxlength="9">
+            </div>
+
+            <div class="login-form-group">
+                <label>3. 성명</label>
+                <input type="text" id="userName" placeholder="수험자 본인 성명">
+            </div>
+        </div>
+        
+        <button class="btn-login-submit" onclick="validateAndMoveToBridge()">시험 입장하기 →</button>
+    </div>
+
+    <div class="bridge-screen" id="bridgeScreen">
+        <div class="bridge-card">
+            <h2 style="color:#1e3a8a; margin-bottom:15px; font-size:22px;">수험자 인증 확인</h2>
+            <p id="bridgeInfoText" style="font-size:16px; color:#475569; line-height:1.6;"></p>
+            <p style="margin-top:15px; font-size:14px; color:#ef4444; font-weight:bold;">※ 준비가 완료되면 아래 버튼을 눌러 시작하세요.</p>
+        </div>
+        <button class="btn-start-practice" onclick="startExamReal()">시험 연습 시작하기</button>
+    </div>
+
+    <div class="exam-main-container" id="examMainContainer">
+        <div class="header" id="mainHeader">
+            <div class="dropdown-btn" id="dropdownBtn" onclick="toggleDropdown()">문제 1</div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div id="dropdownItemsContainer" style="display: flex; flex-direction: column; overflow-y: auto;"></div>
+                <div class="dropdown-footer-btn" onclick="openStatusFromDropdown()">현황표 열기</div>
+            </div>
+        </div>
+
+        <div class="content" id="mainContent">
+            <div id="questionContent" class="question-container"></div>
+        </div>
+
+        <div class="footer" id="footerButtons"></div>
+    </div>
+
+    <div class="finish-screen" id="finishScreen">
+        <div class="finish-icon">✓</div>
+        <div class="finish-title">시험이 완료되었습니다!</div>
+        <div class="finish-text">
+            답안 제출이 정상적으로 완료되었습니다.<br>수고하셨습니다.
+        </div>
+        <div class="result-box">
+            <div class="result-row"><strong>참가 부문:</strong> <span id="finalCategory">-</span></div>
+            <div class="result-row"><strong>수험 번호:</strong> <span id="finalRegNo">-</span></div>
+            <div class="result-row"><strong>성명:</strong> <span id="finalName">-</span></div>
+            <div id="resSaved" class="result-row"><strong>저장된 답안:</strong> <span>0건</span></div>
+            <div id="resEmpty" class="result-row"><strong>미입력 문항:</strong> <span>0건</span></div>
+        </div>
+        
+        <button class="btn-check-answers" id="btnCheckAnswers" onclick="showAnswerReportTable()">정답 확인하기</button>
+        
+        <div class="report-section" id="reportSection">
+            <div class="report-title">📊 ITQ 인터넷(B형) 정답 및 비교표</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">문제 번호</th>
+                        <th style="width: 35%;">내가 적은 답</th>
+                        <th style="width: 35%;">실제 정답</th>
+                        <th style="width: 15%;">결과</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="statusModal">
+    <div class="modal-content">
+        <div class="modal-header">정답 제출 현황표</div>
+        <div class="status-list" id="statusList"></div>
+        <button class="btn-submit" onclick="submitExam()">제출하기</button>
+        <button class="modal-close" onclick="closeModal()">닫기</button>
+    </div>
+</div>
+
+<script>
+    // 원본 데이터셋 정렬 배열 (문제 8번 누락분 추가 및 박스 설명을 위한 desc 구조체 생성)
+    const questions = [
+        { id: 1, type: 'choice', q: "다음 중 개인정보 유출 예방 방법으로 옳지 않은 것은?", options: ["의심스러운 이메일의 링크는 클릭하지 않는다.", "공용 컴퓨터 사용 후에는 반드시 로그아웃한다.", "여러 사이트에서 동일한 비밀번호를 사용한다.", "2단계 인증을 설정하여 보안을 강화한다."], answer: 3 },
+        { id: 2, type: 'choice', q: "다음 중 자녀의 스마트폰 중독을 줄이기 위한 부모의 역할로 옳지 않은 것은?", options: ["자녀가 이용하는 콘텐츠를 함께 확인하고 지도한다.", "사용 시간을 정하고 가족 간 약속을 통해 관리한다.", "스마트폰 대신 할 수 있는 다양한 활동을 권장한다.", "부모가 스마트폰을 자주 사용하며 자유롭게 사용하는 모습을 보여준다."], answer: 4 },
+        
+        { id: 3, type: 'choice', q: "다음 미술작품 중 '안개 위의 방랑자'를 그린 작가를 골라 해당 번호를 선택하시오.", options: ["① 구스타브 쿠르베", "② 에두아르 마네", "③ 에드워드 호퍼", "④ 라파엘로 산치오", "⑤ 카스파르 다비드 프리드리히"], answer: 5 },
+        { id: 4, type: 'choice', q: "다음 미술작품 중 '오르낭의 매장'를 그린 작가를 골라 해당 번호를 선택하시오.", options: ["① 구스타브 쿠르베", "② 에두아르 마네", "③ 에드워드 호퍼", "④ 라파엘로 산치오", "⑤ 카스파르 다비드 프리드리히"], answer: 1 },		
+        { id: 5, type: 'choice', q: "다음 미술작품 중 '밤을 지새우는 사람들'를 그린 작가를 골라 해당 번호를 선택하시오.", options: ["① 구스타브 쿠르베", "② 에두아르 마네", "③ 에드워드 호퍼", "④ 라파엘로 산치오", "⑤ 카스파르 다비드 프리드리히"], answer: 3 },		
+        
+        { id: 6, type: 'subjective', q: "물품을 소유의 개념이 아닌 서로 대여해 주고 차용해 쓰는 개념을 말한다. 물품은 물론 생산 설비나 서비스 등을 개인이 소유할 필요 없이 빌려 쓰는 의미를 담고 있는 정답 명칭을 검색하여 적으시오.", answer: "공유경제(sharing economy)" },
+        { id: 7, type: 'subjective', q: "곡우(穀雨)는 봄철 마지막 절기로 봄비가 자주 내리고 곡식이 풍성해지는 때이다. 2026년 곡우인 날의 기상청 보령 무인관서의 일최고기온(단위: ℃, 소수 첫째 자리까지 표시)을 검색하시오.", answer: "14.6" },
+		
+        { id: 8, type: 'subjective', q: "다음 문장이 설명하는 물질을 검색하시오(정답).",
+		  desc : "설탕 대체물과 완하제로 사용되는 설탕 알코올(폴리올)입니다. 자당 단맛의 75~90%를 가지며 화학적 용어로 4-0-α-글루코피라노실-d-소르비톨로 알려져 있는 이 물질을 검색하시오.", answer: "말티톨" },
+        
+        // [수정사항 반영] 문제 7번 지문설명 박스화 구조 매칭
+        { 
+            id: 9, 
+            type: 'subjective', 
+            q: "다음 빈칸(괄호)에 적절한 명칭을 검색하여 적으시오.", 
+            desc: "철수는 인공지능에 관심이 있어 관련 기술을 공부하던 중, 다음과 같은 사이트를 발견했다.\nhttps://en.wikipedia.org/wiki/Graphics_processing_unit\n\n이 사이트는 GPU에 대한 상세한 설명을 담고 있지만, 영어라서 모든 내용을 이해하는 것은 어려웠다. 철수는 GPU가 왜 인공지능 산업에 영향을 끼치는지 궁금해 AI를 활용해 해당 사이트를 번역해 살펴봤고, GPU를 범용 목적으로 활용하는 시도인 GPGPU라는 기술이 핵심이라는 사실을 알 수 있었다.\n\n그리고 이 기술은 2007년 NVIDIA가 공개한 GPU 컴퓨팅 프로그래밍 모델인 (      ) 플랫폼 덕분에 빠르게 보급되었다.",
+            answer: "CUDA(Compute Unified Device Architecture)" 
+        },
+        
+        // [수정사항 반영] 누락된 원본 시험지 문제 8번을 새롭게 추가하고 지문설명 박스화 구성
+        { 
+            id: 10, 
+            type: 'choice', 
+            q: "다음 생성형 인공지능(AI)과 나눈 대화 중 마이야르 현상에 대한 설명에서 '틀린' 항목의 번호를 고르시오.", 
+            desc: "마이야르 현상은 식재료에 포함된 단백질, 탄수화물, 당 화합물 등이 열로 인하여 변성되며 새로운 화학물질이 형성되어 풍미와 맛이 개선되는 현상을 의미합니다.\n\n주로 ① 바짝 구운 고기, ② 볶은 커피콩, 식빵의 테두리 등에서 관측할 수 있는 변색한 부위가 마이야르 현상이 일어난 부위입니다.\n\n마이야르 현상은 ③ 표면의 수분이 풍부할수록, ④ 식재료를 고온에서 가열할수록 활발하게 일어납니다.\n\n식재료를 볶은 프라이팬에는 마이야르 반응이 활발히 일어난 찌꺼기가 눌어붙는 경우가 있는데, 수분을 첨가하여 이 찌꺼기를 녹여내어 육수나 소스로 활용하는 기법을 디글레이징이라고 부릅니다.",
+            options: ["①번 항목", "②번 항목", "③번 항목", "④번 항목"], 
+            answer: 3 
+        },
+        
+        // 뒷번호 자동 밀림 처리 및 연동 규칙 보정
+        { id: 11, type: 'choice', q: "서울 삼성역 5번 출구에서 삼성동 봉은사를 도보로 가는 경로 지도를 캡처합니다. 하셨습니까?", options: ["미완료", "캡처 완료"], answer: 2 },
+        { id: 12, type: 'subjective', q: "한국장학재단 국가장학금 유형 중 학자금 지원 '1구간'의 2026년 연간 최대 지원 금액(단위: 만원)을 숫자로 검색하여 적으시오.", answer: "570" },
+        { id: 13, type: 'subjective', q: "유네스코에서 문해력 향상 및 도서 문화 확대를 위해 지정하는 2026년 '세계 책의 수도' 지정 도시명을 검색하여 적으시오.", answer: "리우데자네이루" },
+        
+        { id: "14", type: 'choice', q: "광주시립미술관 심볼로고(Museum Identity)이미지를 검색하여 저장하시오. 하셨습니까?", options: ["미완료", "캡처 완료"], answer: 2 },
+        { id: "15", type: 'subjective', q: "광주시립미술관 2026년 국제레지던시 입주작가 성명(2명)을 검색하여 기입하시오.", answer: "송유미, 윤연우" },		
+        { id: "16", type: 'subjective', q: "광주시립미술관의 비전을 검색하여 기입하시오.", answer: "시민과 함께 하는 열린 미술관" },
+        { id: "17", type: 'subjective', q: "광주시립미술관 주소(도로명 주소)를 검색하여 기입하시오.", answer: "광주광역시 북구 하서로 52" }
+    ];
+
+    let currentIdx = 0; 
+    let savedAnswers = {}; 
+    let userData = { category: '', regNo: '', name: '' };
+
+    window.onload = function() {
+        initDropdownMenu();
+    };
+
+    function validateAndMoveToBridge() {
+        const cat = document.getElementById('userCategory').value;
+        const reg = document.getElementById('userRegNo').value.trim();
+        const name = document.getElementById('userName').value.trim();
+
+        if(!reg || reg.length < 8) { alert('수험번호 8자리를 정확히 입력해 주세요.'); return; }
+        if(!name) { alert('성명을 입력해 주세요.'); return; }
+
+        userData.category = cat;
+        userData.regNo = reg;
+        userData.name = name;
+
+        document.getElementById('bridgeInfoText').innerHTML = `
+            반갑습니다, <strong>${name}</strong> 수험자님!<br><br>
+            참가부문: <strong>${cat}</strong><br>수험번호: <strong>${reg}</strong>
+        `;
+
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('bridgeScreen').style.display = 'flex';
+    }
+
+    function startExamReal() {
+        document.getElementById('bridgeScreen').style.display = 'none';
+        document.getElementById('examMainContainer').style.display = 'flex';
+        renderQuestion();
+    }
+
+    function initDropdownMenu() {
+        const container = document.getElementById('dropdownItemsContainer');
+        container.innerHTML = '';
+        questions.forEach((q, idx) => {
+            const item = document.createElement('div');
+            item.className = 'dropdown-item';
+            item.id = `dd-item-${q.id}`;
+            item.innerText = `문제 ${q.id}`;
+            item.onclick = () => {
+                currentIdx = idx;
+                renderQuestion();
+                toggleDropdown();
+            };
+            container.appendChild(item);
+        });
+    }
+
+    function toggleDropdown() {
+        document.getElementById('dropdownMenu').classList.toggle('active');
+    }
+
+    function openStatusFromDropdown() {
+        toggleDropdown();
+        openModal();
+    }
+
+    function renderQuestion() {
+        const currentQ = questions[currentIdx];
+        document.getElementById('dropdownBtn').innerText = `문제 ${currentQ.id}`;
+        
+        questions.forEach(q => {
+            const item = document.getElementById(`dd-item-${q.id}`);
+            if(savedAnswers[q.id] !== undefined && savedAnswers[q.id] !== '') {
+                item.classList.add('saved');
+            } else {
+                item.classList.remove('saved');
+            }
+        });
+
+        const container = document.getElementById('questionContent');
+        container.innerHTML = '';
+
+        // 문제 질문 영역 구성
+        const qBox = document.createElement('div');
+        qBox.className = 'question-box';
+        qBox.innerText = `[문제 ${currentQ.id}] ${currentQ.q}`;
+        container.appendChild(qBox);
+
+        // [수정사항 반영] 설명 지문(desc)이 정의되어 있는 문항의 경우 박스형태로 렌더링하도록 분기
+        if (currentQ.desc) {
+            const descBox = document.createElement('div');
+            descBox.className = 'info-description-box';
+            descBox.innerText = currentQ.desc;
+            container.appendChild(descBox);
+        }
+
+        // 입력 폼 렌더링
+        if (currentQ.type === 'choice') {
+            const optContainer = document.createElement('div');
+            optContainer.className = 'options-container';
+            
+            currentQ.options.forEach((opt, oIdx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                if (savedAnswers[currentQ.id] === (oIdx + 1)) {
+                    btn.classList.add('selected');
+                }
+                btn.innerText = `${opt}`;
+                btn.onclick = () => {
+                    const buttons = optContainer.querySelectorAll('.option-btn');
+                    buttons.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    savedAnswers[currentQ.id] = oIdx + 1;
+                    saveAnswerSilentOnly(); 
+                };
+                optContainer.appendChild(btn);
+            });
+            container.appendChild(optContainer);
+
+        } else if (currentQ.type === 'subjective') {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'subjective-input';
+            input.placeholder = '정답 및 검색 결과 내용을 입력하세요.';
+            input.value = savedAnswers[currentQ.id] || '';
+            input.oninput = (e) => {
+                savedAnswers[currentQ.id] = e.target.value;
+            };
+            container.appendChild(input);
+        }
+
+        renderFooterButtons();
+    }
+
+    function renderFooterButtons() {
+        const footer = document.getElementById('footerButtons');
+        footer.innerHTML = '';
+        if (currentIdx === 0) {
+            footer.innerHTML = `
+                <button class="btn btn-status" onclick="openModal()">현황표</button>
+                <button class="btn btn-save" onclick="saveAnswerSilentOnly()">답안저장</button>
+                <button class="btn btn-next" onclick="moveNext()">다음</button>
+            `;
+        } else {
+            footer.innerHTML = `
+                <button class="btn btn-prev" onclick="movePrev()">이전</button>
+                <button class="btn btn-save" onclick="saveAnswerSilentOnly()">답안저장</button>
+                <button class="btn btn-next" onclick="moveNext()">다음</button>
+            `;
+        }
+    }
+
+    function saveAnswerSilentOnly() {
+        questions.forEach(q => {
+            const item = document.getElementById(`dd-item-${q.id}`);
+            if(savedAnswers[q.id] !== undefined && savedAnswers[q.id].toString().trim() !== '') {
+                if(item) item.classList.add('saved');
+            }
+        });
+    }
+
+    function moveNext() { if (currentIdx < questions.length - 1) { currentIdx++; renderQuestion(); } else { alert("마지막 문항입니다. 현황표를 열어 최종 제출을 완료하세요."); } }
+    function movePrev() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
+
+    function openModal() {
+        const listContainer = document.getElementById('statusList');
+        listContainer.innerHTML = '';
+
+        questions.forEach((q, idx) => {
+            const row = document.createElement('div');
+            row.className = 'status-row';
+            let statusText = '미입력';
+            let hasData = false;
+
+            if (q.type === 'choice' && savedAnswers[q.id]) {
+                statusText = `선택 완료 (${savedAnswers[q.id]}번)`;
+                hasData = true;
+            } else if (q.type === 'subjective' && savedAnswers[q.id]?.trim()) {
+                statusText = `입력 완료`;
+                hasData = true;
+            }
+
+            if(hasData) row.classList.add('done');
+            row.innerHTML = `<span style="font-weight:bold;">문제 ${q.id}</span><span>${statusText}</span>`;
+            row.onclick = () => { currentIdx = idx; closeModal(); renderQuestion(); };
+            listContainer.appendChild(row);
+        });
+        document.getElementById('statusModal').classList.add('active');
+    }
+
+    function closeModal() { document.getElementById('statusModal').classList.remove('active'); }
+
+    function submitExam() {
+        if(!confirm("최종 전송 후에는 수정이 불가합니다. 제출하시겠습니까?")) return;
+
+        let savedCount = 0;
+        questions.forEach(q => {
+            if(savedAnswers[q.id] !== undefined && savedAnswers[q.id].toString().trim() !== '') savedCount++;
+        });
+
+        closeModal();
+        document.getElementById('examMainContainer').style.display = 'none';
+        document.getElementById('finalCategory').innerText = userData.category;
+        document.getElementById('finalRegNo').innerText = userData.regNo;
+        document.getElementById('finalName').innerText = userData.name;
+        document.getElementById('resSaved').querySelector('span').innerText = `${savedCount}건`;
+        document.getElementById('resEmpty').querySelector('span').innerText = `${questions.length - savedCount}건`;
+        document.getElementById('finishScreen').style.display = 'flex';
+    }
+
+    function showAnswerReportTable() {
+        const tbody = document.getElementById('reportTableBody');
+        tbody.innerHTML = '';
+
+        questions.forEach(q => {
+            const tr = document.createElement('tr');
+            let userAnsText = '미입력';
+            let correctAnsText = '';
+            let isCorrect = false;
+
+            if (q.type === 'choice') {
+                if(savedAnswers[q.id]) userAnsText = `${savedAnswers[q.id]}번`;
+                if(typeof q.answer === 'number') {
+                    correctAnsText = `${q.answer}번`;
+                    isCorrect = (savedAnswers[q.id] === q.answer);
+                } else {
+                    correctAnsText = `${q.answer}번`;
+                    isCorrect = (savedAnswers[q.id] == q.answer);
+                }
+            } else if (q.type === 'subjective') {
+                if(savedAnswers[q.id]) userAnsText = savedAnswers[q.id].trim();
+                correctAnsText = q.answer;
+                
+                let uNormal = userAnsText.replace(/\s+/g, '').toLowerCase();
+                let cNormal = correctAnsText.replace(/\s+/g, '').toLowerCase();
+                isCorrect = (uNormal.includes(cNormal) || cNormal.includes(uNormal));
+                if(userAnsText === '미입력') isCorrect = false;
+            }
+
+            let resultTag = isCorrect ? `<span class="text-correct">O</span>` : `<span class="text-wrong">X</span>`;
+            if(!isCorrect) tr.className = 'wrong-row';
+
+            tr.innerHTML = `
+                <td><strong>${q.id}</strong></td>
+                <td>${userAnsText}</td>
+                <td>${correctAnsText}</td>
+                <td>${resultTag}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('reportSection').style.display = 'block';
+        document.getElementById('btnCheckAnswers').style.display = 'none';
+        setTimeout(() => { document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' }); }, 100);
+    }
+</script>
+</body>
+</html>

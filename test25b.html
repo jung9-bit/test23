@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025년 IT경진대회 모바일기반 본선 기출문제</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #app {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        /* 1단계: 로그인 화면 */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            padding: 30px 24px;
+            height: 100%;
+            justify-content: space-between;
+            background-color: #ffffff;
+        }
+        .login-header-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .login-form-group {
+            margin-bottom: 24px;
+        }
+        .login-form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+        .login-form-group select, .login-form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 16px;
+            color: #333;
+            background-color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .login-form-group select:focus, .login-form-group input:focus {
+            border-color: #2563eb;
+        }
+        .btn-login-submit {
+            background-color: #2563eb;
+            color: #ffffff;
+            width: 100%;
+            padding: 18px 0;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        /* 2단계: 대기 화면 */
+        .bridge-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            height: 100%;
+            text-align: center;
+            background-color: #f8fafc;
+        }
+        .bridge-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px 20px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        .btn-start-practice {
+            background-color: #10b981;
+            color: white;
+            width: 100%;
+            padding: 18px 0;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 3단계: 메인 문제 풀이 화면 */
+        .exam-main-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .header {
+            padding: 15px 20px;
+            background-color: #f0f4fc;
+            border-bottom: 1px solid #e0e8f5;
+            position: relative;
+            z-index: 10;
+        }
+        .dropdown-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: 1px solid #dcdfe6;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            color: #3f51b5;
+        }
+        .dropdown-btn::after {
+            content: '▼';
+            font-size: 12px;
+            color: #707070;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 75px; left: 20px; right: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dcdfe6;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 350px;
+            overflow-y: auto;
+            flex-direction: column;
+            padding: 8px 0;
+        }
+        .dropdown-menu.active { display: flex; }
+        .dropdown-item {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            color: #333;
+        }
+        .dropdown-item.saved {
+            background-color: #e8eaf6;
+            color: #3f51b5;
+            font-weight: bold;
+        }
+        .dropdown-footer-btn {
+            background-color: #3f51b5;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 0 0 11px 11px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .question-box {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            word-break: keep-all;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-btn {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            line-height: 1.4;
+        }
+        .option-btn.selected {
+            border-color: #2563eb;
+            background-color: #f0f6ff;
+            font-weight: bold;
+        }
+
+        .question-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px auto 15px auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .subjective-textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 10px;
+            resize: none;
+            outline: none;
+        }
+        .subjective-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 15px;
+            margin-top: 10px;
+            outline: none;
+        }
+        .task-box {
+            background-color: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .task-app-btn {
+            background-color: #3f51b5;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 가상 앱 레이어 시뮬레이터 */
+        .fullscreen-app-layer {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ffffff;
+            z-index: 50;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .app-header {
+            color: white; padding: 15px; font-weight: bold; margin-bottom: 20px; text-align: center; border-radius: 8px; font-size: 18px;
+        }
+        .task-input-group { margin-bottom: 14px; }
+        .task-input-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 6px; color: #4a5568; }
+        .task-input-group input, .task-input-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
+
+        /* 하단 바 */
+        .footer {
+            padding: 15px 20px;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 15px 0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-status { background-color: #e2e8f0; color: #4a5568; }
+        .btn-save { background-color: #2563eb; color: #ffffff; }
+        .btn-next { background-color: #0f172a; color: #ffffff; }
+        .btn-prev { background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+
+        /* 모달 */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }
+        .status-list { display: flex; flex-direction: column; overflow-y: auto; flex: 1; margin-bottom: 15px; }
+        .status-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; cursor: pointer; }
+        .status-row.done { color: #2563eb; font-weight: bold; background-color: #f0f6ff; }
+        .btn-submit { background-color: #d32f2f; color: white; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 8px; text-align: center; }
+        .modal-close { background-color: #707070; color: white; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
+
+        /* 완료 화면 */
+        .finish-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 20px;
+            height: 100%;
+            background-color: #ffffff;
+            overflow-y: auto;
+        }
+        .finish-icon { font-size: 54px; color: #4caf50; margin-bottom: 10px; }
+        .finish-title { font-size: 22px; font-weight: bold; color: #1e3a8a; margin-bottom: 10px; }
+        .finish-text { font-size: 15px; color: #4a5568; line-height: 1.5; margin-bottom: 20px; }
+        .result-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; padding: 16px; width: 100%; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .result-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; border-bottom: 1px dashed #e2e8f0; }
+        .result-row:last-child { border-bottom: none; }
+        
+        .btn-check-answers {
+            background-color: #3f51b5;
+            color: #ffffff;
+            width: 100%;
+            padding: 16px 0;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .report-section { display: none; width: 100%; margin-top: 10px; border-top: 2px solid #3f51b5; padding-top: 20px; }
+        .report-title { font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 12px; }
+        .report-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: center; margin-bottom: 20px; }
+        .report-table th, .report-table td { padding: 10px 4px; border: 1px solid #cbd5e1; word-break: keep-all; }
+        .report-table th { background-color: #f1f5f9; font-weight: bold; }
+        .report-table tr.wrong-row { background-color: #fff1f2; color: #e11d48; font-weight: bold; }
+        .report-table tr.wrong-row td { border-color: #fca5a5; }
+        .text-correct { color: #16a34a; font-weight: bold; }
+        .text-wrong { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="login-screen" id="loginScreen">
+        <div>
+            <div class="login-header-title">2025년 IT경진대회 모바일기반 본선</div>
+            <div class="login-form-group">
+                <label>1. 참가부문</label>
+                <select id="userCategory">
+                    <option value="" disabled selected>참가 부문을 선택하세요</option>
+                    <option value="고령층">고령층</option>
+                    <option value="장년층">장년층</option>
+                    <option value="다문화">다문화</option>
+                </select>
+            </div>
+            <div class="login-form-group">
+                <label>2. 접수번호</label>
+                <input type="text" id="userRegNo" placeholder="접수번호 입력">
+            </div>
+            <div class="login-form-group">
+                <label>3. 성명</label>
+                <input type="text" id="userName" placeholder="참가자 성명">
+            </div>
+        </div>
+        <button class="btn-login-submit" onclick="validateAndMoveToBridge()">시험 입장하기 →</button>
+    </div>
+
+    <div class="bridge-screen" id="bridgeScreen">
+        <div class="bridge-card">
+            <h2 style="color:#1e3a8a; margin-bottom:15px; font-size:22px;">수험자 확인 완료</h2>
+            <p id="bridgeInfoText" style="font-size:16px; color:#475569; line-height:1.6;"></p>
+            <p style="margin-top:15px; font-size:14px; color:#ef4444; font-weight:bold;">※ 준비가 완료되면 시작하기 버튼을 누르세요.</p>
+        </div>
+        <button class="btn-start-practice" onclick="startExamReal()">시험 시작하기</button>
+    </div>
+
+    <div class="exam-main-container" id="examMainContainer">
+        <div class="header" id="mainHeader">
+            <div class="dropdown-btn" id="dropdownBtn" onclick="toggleDropdown()">문제 1</div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div id="dropdownItemsContainer" style="display: flex; flex-direction: column; overflow-y: auto;"></div>
+                <div class="dropdown-footer-btn" onclick="openStatusFromDropdown()">현황표 열기</div>
+            </div>
+        </div>
+        <div class="content" id="mainContent">
+            <div id="questionContent" class="question-container"></div>
+        </div>
+        <div class="footer" id="footerButtons"></div>
+    </div>
+
+    <div class="fullscreen-app-layer" id="fullscreenAppLayer"></div>
+
+    <div class="finish-screen" id="finishScreen">
+        <div class="finish-icon">✓</div>
+        <div class="finish-title">시험 완료</div>
+        <div class="finish-text">답안 제출이 정상적으로 완료되었습니다.</div>
+        <div class="result-box">
+            <div class="result-row"><strong>응시 부문:</strong> <span id="finalCategory">-</span></div>
+            <div class="result-row"><strong>성명:</strong> <span id="finalName">-</span></div>
+            <div id="resSaved" class="result-row"><strong>저장된 답안:</strong> <span>0건</span></div>
+            <div id="resEmpty" class="result-row"><strong>미입력 문항:</strong> <span>21건</span></div>
+        </div>
+        <button class="btn-check-answers" id="btnCheckAnswers" onclick="showAnswerReportTable()">정답 확인하기</button>
+        <div class="report-section" id="reportSection">
+            <div class="report-title">📊 본선 기출 채점비교표</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">번호</th>
+                        <th style="width: 35%;">내 답안</th>
+                        <th style="width: 35%;">정답</th>
+                        <th style="width: 15%;">결과</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="statusModal">
+    <div class="modal-content">
+        <div class="modal-header">정답 제출 현황표</div>
+        <div class="status-list" id="statusList"></div>
+        <button class="btn-submit" onclick="submitExam()">제출하기</button>
+        <button class="modal-close" onclick="closeModal()">닫기</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { id: 1, type: 'choice', q: "제33회 아시아 태평양 경제협력체 정상회의(APEC 2025 Korea)는 각지에서 분산 개최되는 고위관리회의(SOM) 및 분야별 장관회의를 거쳐, 공식 일정에 정상회의를 개최합니다. 다음 중 APEC 2025의 회의장소가 아닌 지역을 찾아보세요.", options: ["경주", "부산", "세종", "인천", "제주"], answer: 3 },
+        { id: 2, type: 'choice', q: "우정사업본부에서는 2025년에 \"국가유산 궁궐 야행\" 우표를 발행했습니다. 다음 중 이 우표의 소재로 사용된 디자인이 아닌 것을 찾아보세요.", options: ["경복궁 별빛야행", "경희궁 야행", "덕수궁 밤의 석조전", "창경궁 야연", "창덕궁 달빛기행"], answer: 2 },
+        { id: 3, type: 'choice', q: "다음 중 '2025 세계유산축전 선암사, 갯벌'의 공연 프로그램 날짜로 옳지 않은 것을 찾아보세요.", options: ["9월 12일 : 2025 세계유산축전 선암사, 갯벌 개막식", "9월 17일 : 만일(萬日)의 수행", "9월 20일 : 연결된 유산, 하나의 울림(connected heritage)", "9월 24일 : 갯벌의 사계", "9월 28일 : 음악이 함께하는 큰 스님, 큰 말씀"], answer: 4 },
+        { id: 4, type: 'choice', q: "국립고궁박물관이 개관 20돌을 맞아 창덕궁 내전을 장식했던 벽화 6점และ 초본 1점을 한자리에 내보이는 특별전 '창덕궁의 근사한 벽화'를 개최하고 있습니다. '창덕궁의 근사한 벽화' 특별전 포스터 배경에 사용된 벽화의 작가를 찾아보세요.", options: ["김규진", "김은호", "노수현", "오일영", "이용우"], answer: 1 },
+        { id: 5, type: 'choice', q: "국가지점번호는 대한민국 국토 및 인접 해양을 격자형으로 구획하고 각 지점에 부여한 고유 번호로, 긴급 상황 발생 시 구조 요청 위치를 정확하게 알리는 데 사용됩니다. 다음 중에서 국가지점번호 '라마 1355 0644'와 가장 가까운 산을 찾아보세요.", options: ["계룡산", "북한산", "설악산", "오대산", "지리산"], answer: 5 },
+        { id: 6, type: 'choice', q: "다음 중 한국에서 출발하여 일본 도쿄/하네다 공항에 도착하는 여객기를 운항하지 않는 항공사(공동운항편 포함)를 찾아보세요.", options: ["Air France(에어프랑스)", "AIR PEACH(피치항공)", "All Nippon Airways(전일본공수)", "Skymark Airlines(스카이마크)", "Virgin Atlantic Airways(버진 애틀란틱항공)"], answer: 4 },
+        { id: 7, type: 'choice', q: "KBO 정규시즌(프로야구) 역대 타자 기록에서 가장 높은 시즌타율을 찾아보세요.", options: ["0.389", "0.406", "0.412", "0.426", "0.440"], answer: 3 },
+        { id: 8, type: 'choice', q: "미국 조폐국의 'American Women Quarters' 프로그램은 다양한 분야에서 큰 업적을 남긴 미국 여성들을 기념하기 위해 기념 쿼터 동전을 발행했습니다. 다음 인물 중 2025년에 선정되지 않은 인물을 찾아보세요.", options: ["Dr. Vera Rubin", "Ida B. Wells", "Juliette Gordon Low", "Stacey Park Milbern", "Zitkala-Ša"], answer: 5 },
+        { id: 9, type: 'choice', q: "2020년부터 현재까지 발생한 태풍 중에서 한반도에 상륙하지 않은 태풍을 찾아보세요.", options: ["오마이스(OMAIS)", "종다리(JONGDARI)", "카눈(KHANUN)", "하이선(HAISHEN)", "힌남노(HINNAMNOR)"], answer: 2 },
+        { id: 10, type: 'choice', q: "제78회 칸영화제(78th Festival de Cannes)에서 라 시네프 1등상(La Cinef First Prize)의 작품명을 찾아보세요.", options: ["FIRST SUMMER(첫여름)", "I'M GLAD YOU'RE DEAD NOW(아임 글래드 유어 데드 나우)", "SENTIMENTAL VALUE(센티멘털 밸류)", "THE SECRET AGENT(더 시크릿 에이전트)", "UN SIMPLE ACCIDENT(언 심플 액시던트)"], answer: 1 },
+        { id: 11, type: 'choice', q: "다음 주 수요일에 오송역에서 출발해서 포항역에 도착하는 SRT 열차(직통)를 예약하려고 합니다. 이 구간의 소요시간을 찾아보세요.", options: ["1시간 36분", "1시간 38분", "1시간 39분", "1시간 41분", "1시간 44분"], answer: 4 },
+        { id: 12, type: 'choice', q: "수도권 지하철 1호선 연천역에서 신창역까지 182km 구간의 소요시간은 239분(3시간 59분)이라고 합니다. 이 구간의 이용요금(카드요금 기준, 일반 성인 요금)을 찾아보세요.", options: ["2,650원", "3,550원", "4,650원", "5,550원", "6,650원"], answer: 3 },
+        { id: 13, type: 'choice', q: "행정안전부 지방공공요금 정보 기준, 2025년 6월 강원 지역의 '20리터(ℓ) 쓰레기봉투' 평균요금을 찾아보세요.", options: ["358원", "438원", "680원", "758원", "773원"], answer: 2 },
+        { id: 14, type: 'choice', q: "우체국 위치찾기 무인창구 지도(선릉역-삼성역 인근)에서 주말에는 운영하지 않는 무인창구를 찾아보세요.", image: "25b-14.png", options: ["A", "B", "C", "D", "E"], answer: 4 },
+        { id: 15, type: 'choice', q: "건강보험심사평가원 비급여 진료비용 정보 서비스를 활용해 세종시 지역 종합병원의 싱그릭스(대상포진) 예방접종 금액을 찾아보세요.", options: ["230,000원", "240,000원", "240,500원", "250,000원", "253,000원"], answer: 5 },
+        { id: 16, type: 'choice', q: "다음 몽골어 질문에 대한 답변을 찾아보세요. \n[Польш улсын нийслэл юу вэ?]", options: ["바르샤바", "아스타나", "앙카라", "울란바토르", "캔버라"], answer: 1 },
+        { id: 17, type: 'choice', q: "제시된 QR 코드를 읽으면 확인되는 ISBN에 해당하는 도서명을 찾아보세요.", image: "25b-17.png", options: ["도산 안창호와 함께 독립의 길을 걷다", "뭉우리돌의 바다", "민족의 영웅 안중근", "백범일지", "최소한의 한국사"], answer: 5 },
+        { id: 18, type: 'subjective', q: "(주관식) 다음의 텍스트 이미지를 텍스트로 변환하여 답안에 복사하여 붙여넣기 해주세요.", image: "25b-18.png", isTextarea: true, answer: "2025 한국형 기록영화 축제를 개최하고, 동 행사의 프로그램으로 다큐 상영회를 올해 처음 선보인다. 한국형 기록영화는 과기정통부가 국내 기록영화 활성화를 위해 2022년부터 추진해 온 기록영화 전주기 제작지원 사업으로, 우수 기록영화 발굴 및 제작지원, 제작자 역량 강화, 투자 연계, 해외 진출 등을 지원한다. 올해부터는 기록영화에 대한 국민적 관심과 참여도를 높이기 위해 행사명을 한국형 기록영화 축제로 전환하고, 그 동안 한국형 기록영화 등에서 발굴, 지원한 우수 기록영화를 일반 국민들과 함께 즐길 수 있도록 다큐 상영회를 신설하였다. 다큐 상영회는 서울 CGV명동역 씨네라이브러리 ART1관에서 열리며, 상영 이후에는 각 작품의 감독과 주요 출연진이 참여하는 관객과의 대화 자리도 마련된다. 먼저 1일차에는 2022년 한국형 기록영화 프라임 장려상 수상작으로, 청각장애 무용수가 만드는 자기만의 음악과 예술세계를 이야기하는 소리없이 나빌레라를 선보인다. 2일차에는 과기정통부와 한국방송통신진흥원의 제작지원작이자 2024년 한국방송대상 대상을 수상한 서울방송의 고래와 나로, 동 작품에서는 경이로운 고래의 세계를 통해 우리의 환경문제를 조명하고 있다. 마지막 3일차에는 2024년 한국형 기록영화 프라임 최우수상 수상작으로, 재일한국인 3세 인권 운동가이자 여성 사업가인 신숙옥의 삶을 담은 호루몽이 상영된다. 상영 이후에 진행되는 관객과의 대화에서는 감독과 주요 출연진이 관객들에게 작품의 사회적 배경과 제작 과정을 직접 소개하고 소통할 수 있는 특별한 시간이 제공된다. 특히 호루몽에는 주인공 신숙옥 씨가 직접 참석할 예정으로 더욱 기대를 모은다. 기록영화 상영회는 전 회차 무료로 진행되며, 참석 관객에게는 한국형 기록영화 기념품 등 다양한 선물도 제공될 예정이다. 상영회 관람권 신청은 누구나 가능하며, 한국형 기록영화 공식 누리집에서 선착순으로 접수한다." },
+        { id: 19, type: 'subjective', q: "(주관식) 다음 그림을 소장하고 있는 곳의 주소(도로명 주소)를 찾아보세요.", image: "25b-19.png", answer: "서울특별시 용산구 이태원로55길 60-16" },
+        { id: 20, type: 'task20', q: "(작업형) \"POST\" 아이콘을 누르고 우편자동접수기에서 서류봉투 1통을 익일특급 등기로 보냅니다. 휴대폰번호 010-5678-1234 입력, 모바일 영수증, 신용카드 결제를 완료하고 [처음으로] 단추를 눌러 완수하십시오.", answer: "작업형" },
+        { id: 21, type: 'task21', q: "(실무형) 제공된 신분증(여권)과 신용카드 정보로 지방세를 납부하려고 합니다. 아래 정보를 활용하여 카드납부 정보를 완성하십시오.", image: "25b-21.png", answer: "납부 완료" }
+    ];
+
+    let currentIdx = 0; 
+    let savedAnswers = {}; 
+    let userData = { category: '', regNo: '', name: '' };
+
+    window.onload = function() {
+        initDropdownMenu();
+    };
+
+    function validateAndMoveToBridge() {
+        const cat = document.getElementById('userCategory').value;
+        const reg = document.getElementById('userRegNo').value.trim();
+        const name = document.getElementById('userName').value.trim();
+        if(!cat || !reg || !name) { alert('모든 필드를 입력해 주세요.'); return; }
+        userData = { category: cat, regNo: reg, name: name };
+        document.getElementById('bridgeInfoText').innerHTML = `수험자: <strong>${name}</strong> (${cat})<br>접수번호: <strong>${reg}</strong>`;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('bridgeScreen').style.display = 'flex';
+    }
+
+    function startExamReal() {
+        document.getElementById('bridgeScreen').style.display = 'none';
+        document.getElementById('examMainContainer').style.display = 'flex';
+        renderQuestion();
+    }
+
+    function initDropdownMenu() {
+        const container = document.getElementById('dropdownItemsContainer');
+        container.innerHTML = '';
+        questions.forEach((q, idx) => {
+            const item = document.createElement('div');
+            item.className = 'dropdown-item';
+            item.id = `dd-item-${q.id}`;
+            item.innerText = `문제 ${q.id}`;
+            item.onclick = () => { currentIdx = idx; renderQuestion(); toggleDropdown(); };
+            container.appendChild(item);
+        });
+    }
+
+    function toggleDropdown() { document.getElementById('dropdownMenu').classList.toggle('active'); }
+    function openStatusFromDropdown() { toggleDropdown(); openModal(); }
+
+    function renderQuestion() {
+        const currentQ = questions[currentIdx];
+        document.getElementById('dropdownBtn').innerText = `문제 ${currentQ.id}`;
+        
+        questions.forEach(q => {
+            const item = document.getElementById(`dd-item-${q.id}`);
+            if(savedAnswers[q.id] !== undefined && savedAnswers[q.id] !== '') item.classList.add('saved');
+            else item.classList.remove('saved');
+        });
+
+        document.getElementById('fullscreenAppLayer').style.display = 'none';
+        const container = document.getElementById('questionContent');
+        container.innerHTML = '';
+
+        const qBox = document.createElement('div');
+        qBox.className = 'question-box';
+        qBox.innerText = `[문제 ${currentQ.id}] ${currentQ.q}`;
+        container.appendChild(qBox);
+
+        if (currentQ.image) {
+            const qImg = document.createElement('img');
+            qImg.src = currentQ.image;
+            qImg.className = 'question-image';
+            container.appendChild(qImg);
+        }
+
+        if (currentQ.type === 'choice') {
+            const optContainer = document.createElement('div');
+            optContainer.className = 'options-container';
+            currentQ.options.forEach((opt, oIdx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                if (savedAnswers[currentQ.id] === (oIdx + 1)) btn.classList.add('selected');
+                btn.innerText = `${oIdx + 1}. ${opt}`;
+                btn.onclick = () => {
+                    optContainer.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    savedAnswers[currentQ.id] = oIdx + 1;
+                };
+                optContainer.appendChild(btn);
+            });
+            container.appendChild(optContainer);
+        } else if (currentQ.type === 'subjective') {
+            if (currentQ.isTextarea) {
+                const textarea = document.createElement('textarea');
+                textarea.className = 'subjective-textarea';
+                textarea.placeholder = '여기에 타이핑 혹은 복사하여 입력하세요.';
+                textarea.value = savedAnswers[currentQ.id] || '';
+                textarea.oninput = (e) => { savedAnswers[currentQ.id] = e.target.value; };
+                container.appendChild(textarea);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'subjective-input';
+                input.placeholder = '도로명 주소를 정확하게 입력하세요.';
+                input.value = savedAnswers[currentQ.id] || '';
+                input.oninput = (e) => { savedAnswers[currentQ.id] = e.target.value; };
+                container.appendChild(input);
+            }
+        } else if (currentQ.type === 'task20' || currentQ.type === 'task21') {
+            const taskIntroBox = document.createElement('div');
+            taskIntroBox.className = 'task-box';
+            const btnName = currentQ.type === 'task20' ? '우편자동접수기 (POST) 실행' : '지방세 카드 납부 시스템 실행';
+            taskIntroBox.innerHTML = `<button class="task-app-btn" onclick="openFullscreenApp('${currentQ.type}')">${btnName}</button>`;
+            container.appendChild(taskIntroBox);
+        }
+        renderFooterButtons();
+    }
+
+    function openFullscreenApp(type) {
+        const appLayer = document.getElementById('fullscreenAppLayer');
+        appLayer.innerHTML = '';
+        appLayer.style.display = 'flex';
+
+        if(type === 'task20') {
+            appLayer.innerHTML = `
+                <div class="app-header" style="background:#8b5a2b;">우편자동접수기 시뮬레이터</div>
+                <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px;">
+                    <div class="task-input-group"><label>보내는 사람 휴대폰번호</label><input type="text" id="postPhone" placeholder="010-XXXX-XXXX"></div>
+                    <div class="task-input-group"><label>우편 종류</label><select id="postType"><option value="일반">일반 등기</option><option value="익일특급">익일특급 등기</option></select></div>
+                    <div class="task-input-group"><label>영수증 발급</label><select id="postReceipt"><option value="종이">종이 영수증</option><option value="모바일">모바일 영수증</option></select></div>
+                    <div class="task-input-group"><label>결제 수단</label><select id="postPay"><option value="현금">현금</option><option value="신용카드">신용카드</option></select></div>
+                    <button class="btn btn-save" style="margin-top:10px;" onclick="processPostTask()">접수 및 라벨발행</button>
+                    <div id="postStatus" style="display:none; text-align:center; padding:10px; background:#f0fdf4; color:#16a34a; font-weight:bold; border-radius:8px;">[라벨 부착 완료]</div>
+                </div>
+                <div class="footer" style="padding:10px 0 0 0; gap:10px;">
+                    <button class="btn btn-prev" onclick="closeFullscreenApp()">← 돌아가기 (문제 확인)</button>
+                    <button class="btn btn-next" id="btnPostExit" disabled style="background-color:#0f172a;" onclick="completePostTask()">[처음으로]</button>
+                </div>
+            `;
+        } else if(type === 'task21') {
+            appLayer.innerHTML = `
+                <div class="app-header" style="background:#1e3a8a;">인터넷 지방세 납부 (카드전용)</div>
+                <div style="flex:1; overflow-y:auto;">
+                    <div class="task-input-group"><label>카드사 선택</label><input type="text" id="taxCardName" placeholder="예: 피플카드"></div>
+                    <div class="task-input-group"><label>카드번호</label><input type="text" id="taxCardNo" placeholder="하이픈 없이 숫자만 입력"></div>
+                    <div class="task-input-group"><label>유효기간 (MMYY)</label><input type="text" id="taxCardValid" placeholder="예: 0827"></div>
+                    <div class="task-input-group"><label>생년월일 (YYMMDD)</label><input type="text" id="taxBirth" placeholder="예: 870201"></div>
+                    <div class="task-input-group"><label>카드비밀번호 앞2자리</label><input type="password" id="taxCardPw" placeholder="예: 16" maxlength="2"></div>
+                </div>
+                <div class="footer" style="padding:10px 0 0 0;"><button class="btn btn-prev" onclick="closeFullscreenApp()">취소</button><button class="btn btn-save" onclick="submitTask21()">납부하기</button></div>
+            `;
+        }
+    }
+
+    function closeFullscreenApp() { document.getElementById('fullscreenAppLayer').style.display = 'none'; }
+
+    function processPostTask() {
+        const phone = document.getElementById('postPhone').value.trim();
+        const type = document.getElementById('postType').value;
+        const receipt = document.getElementById('postReceipt').value;
+        const pay = document.getElementById('postPay').value;
+
+        if (phone === "010-5678-1234" && type === "익일특급" && receipt === "모바일" && pay === "신용카드") {
+            document.getElementById('postStatus').style.display = 'block';
+            document.getElementById('btnPostExit').disabled = false;
+            alert('라벨이 인쇄 및 자동 부착되었습니다. [처음으로]를 눌러 완료하세요.');
+        } else {
+            alert('지시사항과 입력 정보가 일치하지 않습니다. (번호 하이픈 포함 및 선택 확인)');
+        }
+    }
+    function completePostTask() { savedAnswers[20] = '작업형'; closeFullscreenApp(); renderQuestion(); }
+
+    function submitTask21() {
+        const cName = document.getElementById('taxCardName').value.trim();
+        const cNo = document.getElementById('taxCardNo').value.trim();
+        const cValid = document.getElementById('taxCardValid').value.trim();
+        const birth = document.getElementById('taxBirth').value.trim();
+        const pw = document.getElementById('taxCardPw').value.trim();
+
+        if (cName === "피플카드" && cNo === "1234567890122509" && cValid === "0827" && birth === "870201" && pw === "16") {
+            alert('지방세 카드 납부가 정상 완료되었습니다.');
+            savedAnswers[21] = "납부 완료";
+            closeFullscreenApp();
+            renderQuestion();
+        } else {
+            alert('입력 정보가 신분증/신용카드 샘플 규격 및 비밀번호(1619) 기준과 다릅니다.');
+        }
+    }
+
+    function renderFooterButtons() {
+        const footer = document.getElementById('footerButtons');
+        footer.innerHTML = currentIdx === 0 ? 
+            `<button class="btn btn-status" onclick="openModal()">현황표</button><button class="btn btn-save" onclick="renderQuestion()">답안저장</button><button class="btn btn-next" onclick="moveNext()">다음</button>` : 
+            `<button class="btn btn-prev" onclick="movePrev()">이전</button><button class="btn btn-save" onclick="renderQuestion()">답안저장</button><button class="btn btn-next" onclick="moveNext()">다음</button>`;
+    }
+
+    function moveNext() { if (currentIdx < questions.length - 1) { currentIdx++; renderQuestion(); } else { alert("마지막 문항입니다. 현황표를 열어 제출하세요."); } }
+    function movePrev() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
+
+    function openModal() {
+        const listContainer = document.getElementById('statusList');
+        listContainer.innerHTML = '';
+        questions.forEach((q, idx) => {
+            const row = document.createElement('div');
+            row.className = 'status-row';
+            let statusText = '미입력', hasData = false;
+            if(savedAnswers[q.id]) { statusText = '입력완료'; hasData = true; }
+            if(hasData) row.classList.add('done');
+            row.innerHTML = `<span style="font-weight:bold;">문제 ${q.id}</span><span>${statusText}</span>`;
+            row.onclick = () => { currentIdx = idx; closeModal(); renderQuestion(); };
+            listContainer.appendChild(row);
+        });
+        document.getElementById('statusModal').classList.add('active');
+    }
+    function closeModal() { document.getElementById('statusModal').classList.remove('active'); }
+
+    function submitExam() {
+        if(!confirm("최종 제출하시겠습니까? 제출 후 수정 불가합니다.")) return;
+        let savedCount = 0;
+        questions.forEach(q => { if(savedAnswers[q.id]) savedCount++; });
+        closeModal();
+        document.getElementById('examMainContainer').style.display = 'none';
+        document.getElementById('finalCategory').innerText = userData.category;
+        document.getElementById('finalName').innerText = userData.name;
+        document.getElementById('resSaved').querySelector('span').innerText = `${savedCount}건`;
+        document.getElementById('resEmpty').querySelector('span').innerText = `${questions.length - savedCount}건`;
+        document.getElementById('finishScreen').style.display = 'flex';
+    }
+
+    function showAnswerReportTable() {
+        const tbody = document.getElementById('reportTableBody');
+        tbody.innerHTML = '';
+        questions.forEach(q => {
+            const tr = document.createElement('tr');
+            let userAnsRaw = savedAnswers[q.id], userAnsText = '미입력', isCorrect = false;
+
+            if(userAnsRaw) {
+                if(q.type === 'choice') { userAnsText = `${userAnsRaw}번`; isCorrect = (parseInt(userAnsRaw) === q.answer); }
+                else if(q.id === 18) { userAnsText = userAnsRaw.length > 10 ? userAnsRaw.substring(0,10) + '...' : userAnsRaw; isCorrect = (userAnsRaw.trim().replace(/\s+/g, '') === q.answer.replace(/\s+/g, '')); }
+                else if(q.id === 19) { userAnsText = userAnsRaw.trim(); isCorrect = (userAnsRaw.trim() === q.answer); }
+                else { userAnsText = '완료'; isCorrect = true; }
+            }
+            let correctAnsText = q.type === 'choice' ? `${q.answer}번` : (q.id === 18 ? "본문 텍스트" : q.answer);
+            let resultColumn = isCorrect ? `<span class="text-correct">O</span>` : `<span class="text-wrong">X</span>`;
+            if(!isCorrect) tr.className = 'wrong-row';
+
+            tr.innerHTML = `<td><strong>${q.id}</strong></td><td>${userAnsText}</td><td>${correctAnsText}</td><td>${resultColumn}</td>`;
+            tbody.appendChild(tr);
+        });
+        document.getElementById('reportSection').style.display = 'block';
+        document.getElementById('btnCheckAnswers').style.display = 'none';
+    }
+</script>
+</body>
+</html>
