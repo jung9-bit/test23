@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디지털 리터러시 작업형 연습 - 통합본</title>
+    <style>
+        /* 기본 레이아웃 및 탭 디자인 */
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        .tab-wrapper {
+            background-color: #1a3c6c;
+            padding: 10px 10px 0 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .tab-btn {
+            background-color: #2c4d7c;
+            color: #b0c4de;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover {
+            background-color: #345a91;
+            color: #fff;
+        }
+        .tab-btn.active {
+            background-color: #f4f6f9;
+            color: #1a3c6c;
+            border-bottom: 2px solid #f4f6f9;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 파일 공통 인라인 스타일 및 충돌 방지용 클래스 */
+        .page-container {
+            max-width: 750px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            margin: 20px auto;
+        }
+        .question-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            word-break: keep-all;
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-left: 5px solid #1a3c6c;
+        }
+        
+        /* 스마트폰 시뮬레이터 스타일 */
+        .phone-screen {
+            width: 100%;
+            max-width: 360px;
+            height: 540px;
+            border: 8px solid #333;
+            border-radius: 24px;
+            margin: 0 auto 20px auto;
+            background-color: #fff;
+            position: relative;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .phone-screen.active {
+            display: flex;
+        }
+        .app-header {
+            color: white;
+            padding: 14px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            position: relative;
+        }
+        .app-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+
+        /* 24_20 전용 */
+        .nia-icon {
+            width: 85px;
+            height: 85px;
+            background-color: #26c2ff;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #1ba5db;
+            line-height: 1.3;
+        }
+        .menu-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 18px;
+            width: 90%;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .menu-card:hover { border-color: #00b4d8; background-color: #f0faff; }
+        .action-btn {
+            background-color: #00b4d8; color: white; border: none; padding: 14px;
+            border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;
+            margin-top: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-top: auto; background: #e9ecef; padding: 15px; box-sizing: border-box; }
+        .key-btn { background: white; border: 1px solid #dee2e6; padding: 12px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .pass-dots { display: flex; gap: 15px; margin: 20px 0; }
+        .dot { width: 14px; height: 14px; background: #ced4da; border-radius: 50%; }
+        .dot.active { background: #00b4d8; }
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #00b4d8; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 24_21 전용 */
+        .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+        .doc-table th, .doc-table td { border: 1px solid #94a3b8; padding: 8px; text-align: center; }
+        .doc-table th { background-color: #f8fafc; font-weight: bold; color: #334155; }
+        .select-form-box { border: 1px solid #333; padding: 25px 20px; margin-top: 25px; text-align: left; background-color: #fff; }
+        .form-row { margin-bottom: 16px; display: flex; align-items: flex-start; font-size: 13px; line-height: 1.5; }
+        .form-row-title { width: 150px; font-weight: bold; color: #111; padding-top: 2px; flex-shrink: 0; }
+        .form-row-content { display: flex; flex-wrap: wrap; gap: 15px; }
+        .inline-input { width: 50px; text-align: center; padding: 3px; border: 1px solid #94a3b8; border-radius: 2px; }
+
+        /* 25_20 전용 */
+        .cafe-icon { width: 80px; height: 80px; background-color: #26c2ff; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; cursor: pointer; border: 1px solid #1ba5db; }
+        .coupon-card { background: white; border: 2px dashed #ff4757; border-radius: 8px; padding: 15px; width: 85%; cursor: pointer; box-sizing: border-box; }
+        .map-box { width: 90%; height: 180px; background-color: #dfe4ea; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; color: #555; }
+        .map-marker { background-color: #ff4757; color: white; padding: 6px 10px; border-radius: 20px; font-weight: bold; margin-top: 10px; animation: bounce 1s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+        .number-display { font-size: 36px; font-weight: bold; color: #ff4757; margin: 15px 0; background: #fff; padding: 10px 30px; border-radius: 8px; border: 1px solid #ddd; }
+        .back-btn { position: absolute; left: 12px; background: none; border: none; color: white; font-size: 16px; cursor: pointer; font-weight: bold; }
+
+        /* 25_21 전용 */
+        .passport-box { border: 1px solid #ccc; background: linear-gradient(135deg, #eef7fc 0%, #ffffff 100%); padding: 15px; margin-bottom: 30px; }
+        .passport-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 15px; }
+        .passport-body { display: flex; gap: 15px; }
+        .photo-area { width: 120px; height: 150px; background-color: #e0e0e0; border: 1px solid #bbb; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #666; }
+        .info-table { flex: 1; border-collapse: collapse; }
+        .info-table td { padding: 3px 5px; vertical-align: top; font-size: 11px; text-align: left; }
+        .label { color: #666; display: block; font-size: 10px; }
+        .value { font-weight: bold; font-size: 13px; color: #111; }
+        .mrz-area { margin-top: 15px; font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; letter-spacing: 2px; line-height: 1.4; border-top: 1px dashed #bbb; padding-top: 10px; text-align: left; }
+        .form-group { margin-bottom: 15px; display: flex; align-items: center; }
+        .form-group label { width: 160px; font-size: 15px; text-align: left; }
+        .form-group input[type="text"] { width: 250px; padding: 6px 8px; border: 1px solid #000; font-size: 14px; }
+        .date-select-group { display: flex; gap: 5px; }
+        .date-select-group select { padding: 6px 20px 6px 8px; border: 1px solid #000; font-size: 14px; cursor: pointer; }
+
+        /* 시스템 공통 하단 제어 버튼 구역 */
+        .system-button-group { margin-top: 25px; display: flex; justify-content: center; gap: 12px; border-top: 1px solid #eee; padding-top: 20px; }
+        .sys-btn { padding: 10px 24px; font-size: 14px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-secondary { background-color: #6c757d; color: #fff; }
+        .btn-primary { background-color: #1a3c6c; color: #fff; }
+        .btn-info { background-color: #4b6584; color: #fff; }
+
+        /* 인덱스 허브 전용 스타일 */
+        .hub-container { width: 100%; max-width: 650px; background: #ffffff; padding: 40px 30px; border-radius: 12px; text-align: center; margin: 40px auto; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .link-grid { display: flex; flex-direction: column; gap: 15px; }
+        .menu-card-hub { display: flex; align-items: center; justify-content: space-between; padding: 18px 25px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #334155; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.2s ease-in-out; }
+        .menu-card-hub:hover { background-color: #1a3c6c; color: #ffffff; transform: translateY(-2px); }
+        .badge { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: normal; }
+        .badge-25 { background-color: #e0f2fe; color: #0369a1; }
+        .badge-24 { background-color: #fef3c7; color: #b45309; }
+    </style>
+</head>
+<body>
+
+    <div class="tab-wrapper">
+        <button class="tab-btn active" onclick="openTab('hub')">홈 스크린</button>
+        <button class="tab-btn" onclick="openTab('tab_25_20')">2025 예선 20번</button>
+        <button class="tab-btn" onclick="openTab('tab_25_21')">2025 예선 21번</button>
+        <button class="tab-btn" onclick="openTab('tab_24_20')">2024 예선 20번</button>
+        <button class="tab-btn" onclick="openTab('tab_24_21')">2024 예선 21번</button>
+    </div>
+
+    <div id="hub" class="tab-content active">
+        <div class="hub-container">
+            <h1 style="font-size: 28px; color: #1a3c6c; margin-bottom: 10px;">작업형 연습하기</h1>
+            <div style="font-size: 14px; color: #666; margin-bottom: 35px;">연습할 문항의 탭을 선택하거나 아래 링크를 누르시면 해당 문제로 이동합니다.</div>
+            <div class="link-grid">
+                <div class="menu-card-hub" onclick="openTab('tab_25_20')">
+                    <div>
+                        <span class="badge badge-25">2025 예선</span>&nbsp;
+                        <span>25예선20.html (CAFE 쿠폰 주문)</span>
+                    </div>
+                    <span>➔</span>
+                </div>
+                <div class="menu-card-hub" onclick="openTab('tab_25_21')">
+                    <div>
+                        <span class="badge badge-25">2025 예선</span>&nbsp;
+                        <span>25예선21.html (비자 신청서 작성)</span>
+                    </div>
+                    <span>➔</span>
+                </div>
+                <div class="menu-card-hub" onclick="openTab('tab_24_20')">
+                    <div>
+                        <span class="badge badge-24">2024 예선</span>&nbsp;
+                        <span>24예선20.html (NIA Money 환전)</span>
+                    </div>
+                    <span>➔</span>
+                </div>
+                <div class="menu-card-hub" onclick="openTab('tab_24_21')">
+                    <div>
+                        <span class="badge badge-24">2024 예선</span>&nbsp;
+                        <span>24예선21.html (주민등록등본 발급)</span>
+                    </div>
+                    <span>➔</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab_25_20" class="tab-content">
+        <div class="page-container" style="max-width:600px;">
+            <div class="question-title">
+                [문제20] (작업형) “CAFE” 아이콘을 누르고 작업을 시작합니다. 아이스 아메리카노 쿠폰을 먼저 선택하고, 지도에 바로 나오는 스마트쉼센터에서 추가 결제 없이 주문합니다. 픽업번호가 나오면 [← 나가기] 단추를 눌러 과제를 완료합니다.
+            </div>
+            <div class="phone-screen active" id="p25_20_step1">
+                <div class="app-header" style="background-color: #1a3c6c;">스마트 홈 스크린</div>
+                <div class="app-content">
+                    <p style="font-size:13px; color:#666; margin-bottom:20px;">아래 CAFE 아이콘을 터치하세요.</p>
+                    <div class="cafe-icon" onclick="nextStep25_20(2)">CAFE</div>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step2">
+                <div class="app-header" style="background-color: #1a3c6c;">나의 쿠폰함</div>
+                <div class="app-content">
+                    <p style="font-size:14px; font-weight:bold; margin-bottom:15px;">보유 중인 쿠폰을 선택하세요.</p>
+                    <div class="coupon-card" onclick="nextStep25_20(3)">
+                        <span style="color:#ff4757; font-weight:bold; font-size:12px;">[무료 증정쿠폰]</span><br>
+                        <strong style="font-size:16px; color:#111; display:inline-block; margin-top:5px;">아이스 아메리카노 1잔</strong>
+                        <p style="font-size:11px; color:#888; margin:5px 0 0 0;">유효기간: 과제 완료 시까지</p>
+                    </div>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step3">
+                <div class="app-header" style="background-color: #1a3c6c;">주문 매장 선택</div>
+                <div class="app-content">
+                    <p style="font-size:13px; margin-bottom:10px;">주변 매장을 탐색했습니다.</p>
+                    <div class="map-box">
+                        <span>지도가 로드되었습니다</span>
+                        <div class="map-marker">📍 스마트쉼센터</div>
+                    </div>
+                    <button class="action-btn" style="background-color:#1a3c6c;" onclick="nextStep25_20(4)">스마트쉼센터 선택하기</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step4">
+                <div class="app-header" style="background-color: #1a3c6c;">주문 확인 및 결제</div>
+                <div class="app-content" style="justify-content: flex-start; padding-top:30px;">
+                    <h3 style="margin:0 0 15px 0; font-size:16px;">주문 내역을 확인하세요</h3>
+                    <div style="background:#fff; width:90%; padding:15px; border-radius:8px; text-align:left; box-sizing:border-box; font-size:13px; line-height:1.8; border: 1px solid #eee;">
+                        • 매장: <b>스마트쉼센터</b><br>
+                        • 메뉴: 아이스 아메리카노 (1잔)<br>
+                        • 결제수단: 모바일 쿠폰적용<br>
+                        <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+                        • <strong>최종 결제 금액: 0원</strong>
+                    </div>
+                    <button class="action-btn" style="background-color:#ff4757; margin-top:20px;" onclick="nextStep25_20(5)">추가 결제 없이 주문하기</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step5">
+                <div class="app-header" style="background-color: #1a3c6c;">주문 전송 중</div>
+                <div class="app-content">
+                    <div class="spinner" style="border-left-color: #1a3c6c;"></div>
+                    <p style="font-size:14px; font-weight:bold;">스마트쉼센터로<br>주문 정보를 전송하고 있습니다.</p>
+                    <p style="font-size:11px; color:#888; margin-top:5px;">잠시만 기다려주세요...</p>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step6">
+                <div class="app-header" style="background-color: #1a3c6c;">주문 접수 완료</div>
+                <div class="app-content">
+                    <p style="font-size:15px; color:green; font-weight:bold; margin-bottom:5px;">주문이 정상 접수되었습니다!</p>
+                    <p style="font-size:13px; color:#555;">음료가 준비되면 픽업 번호를 안내합니다.</p>
+                    <button class="action-btn" style="background-color:#1a3c6c;" onclick="nextStep25_20(7)">접수 현황 확인</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step7">
+                <div class="app-header" style="background-color: #1a3c6c;">실시간 준비 현황</div>
+                <div class="app-content">
+                    <p style="font-size:14px; font-weight:bold; margin-bottom:10px;">☕ 스마트쉼센터에서<br>열심히 음료를 만들고 있습니다.</p>
+                    <div style="width:80%; background:#ddd; height:10px; border-radius:5px; overflow:hidden; margin:15px 0;">
+                        <div style="background:#1a3c6c; width:70%; height:100%;"></div>
+                    </div>
+                    <button class="action-btn" style="background-color:#1a3c6c;" onclick="nextStep25_20(8)">번호표 새로고침</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step8">
+                <div class="app-header" style="background-color: #1a3c6c;">픽업 알림</div>
+                <div class="app-content">
+                    <p style="font-size:14px; font-weight:bold; margin-bottom:0;">주문하신 음료가 나왔습니다!</p>
+                    <p style="font-size:12px; color:#666; margin-top:5px;">카운터에서 아래 픽업번호를 제시하세요.</p>
+                    <div class="number-display">A-104</div>
+                    <button class="action-btn" style="background-color:#1a3c6c;" onclick="nextStep25_20(9)">확인 완료</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step9">
+                <div class="app-header" style="background-color: #1a3c6c;">
+                    <button class="back-btn" onclick="nextStep25_20(10)">&lt; 나가기</button>
+                    주문 완료 상세
+                </div>
+                <div class="app-content" style="justify-content: flex-start; padding-top:40px;">
+                    <p style="font-size:14px; font-weight:bold; color:#ff4757; margin-bottom:15px;">★ 지침 확인 ★</p>
+                    <p style="font-size:13px; line-height:1.6; color:#444;">
+                        픽업번호 확인이 끝났습니다.<br>
+                        상단 왼쪽의 <strong>[← 나가기]</strong> 단추를 눌러<br>과제를 완료해 주세요.
+                    </p>
+                </div>
+            </div>
+            <div class="phone-screen" id="p25_20_step10">
+                <div class="app-header" style="background-color: #1a3c6c;">과제 종료</div>
+                <div class="app-content">
+                    <div style="font-size:40px; margin-bottom:10px;">✅</div>
+                    <h3 style="margin:0 0 10px 0; color:#1a3c6c;">과제 완료!</h3>
+                    <p style="font-size:13px; color:#555; line-height:1.5;">
+                        CAFE 주문 및 픽업번호 확인 미션을<br>성공적으로 마쳤습니다.<br>
+                        아래에서 <strong>답안저장</strong>을 누르세요.
+                    </p>
+                </div>
+            </div>
+            <div class="system-button-group">
+                <button type="button" class="sys-btn btn-secondary" onclick="openTab('hub')">이전</button>
+                <button type="button" class="sys-btn btn-primary" onclick="alert('답안이 안전하게 저장되었습니다.')">답안저장</button>
+                <button type="button" class="sys-btn btn-info" onclick="reset25_20()">초기화</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab_25_21" class="tab-content">
+        <div class="page-container">
+            <div class="question-title">
+                [문제21] (실무형) 다음의 여권 정보로 해외 비자 신청을 하려고 합니다. 아래 정보를 활용하여 비자 신청서(영문 대문자로 작성)를 완성하십시오.
+            </div>
+            <div class="passport-box">
+                <div class="passport-header">
+                    <div class="passport-title-left">여권 PASSPORT</div>
+                    <div class="passport-title-center">대한민국 REPUBLIC OF KOREA</div>
+                    <div style="width: 40px; height: 20px; background:#ddd; border:1px solid #aaa;"></div>
+                </div>
+                <div class="passport-body">
+                    <div class="photo-area">[여권 사진]</div>
+                    <table class="info-table">
+                        <tr>
+                            <td colspan="2"><span class="label">종류/Type</span><span class="value">PM</span></td>
+                            <td><span class="label">국가코드/Country code</span><span class="value">KOR</span></td>
+                            <td><span class="label">여권번호/Passport No.</span><span class="value">M1234567</span></td>
+                        </tr>
+                        <tr><td colspan="4"><span class="label">성/Surname</span><span class="value">HONG</span></td></tr>
+                        <tr><td colspan="4"><span class="label">이름/Given names</span><span class="value">GILSOON</span></td></tr>
+                        <tr><td colspan="4"><span class="label">한글성명</span><span class="value" style="font-family:'Malgun Gothic';">홍길순</span></td></tr>
+                        <tr>
+                            <td colspan="2"><span class="label">생년월일/Date of birth</span><span class="value">01 2월/FEB 1987</span></td>
+                            <td colspan="2"><span class="label">성별/Sex</span><span class="value">F</span></td>
+                        </tr>
+                        <tr><td colspan="4"><span class="label">국적/Nationality</span><span class="value">REPUBLIC OF KOREA</span></td></tr>
+                        <tr><td colspan="4"><span class="label">발행관청/Authority</span><span class="value">MINISTRY OF FOREIGN AFFAIRS</span></td></tr>
+                        <tr>
+                            <td colspan="2"><span class="label">발급일/Date of issue</span><span class="value">15 8월/AUG 2020</span></td>
+                            <td colspan="2"><span class="label">기간만료일/Date of expiry</span><span class="value">15 8월/AUG 2030</span></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="mrz-area">
+                    PMKORHONG&lt;&lt;GILSOON&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>
+                    M12345670KOR8702010F3008150V2000000000000000
+                </div>
+            </div>
+            <hr style="border: 0; border-top: 1px solid #ccc; margin: 30px 0;">
+            <div style="font-family: Arial, sans-serif; font-size: 24px; color: #1a3c6c; margin-bottom: 5px; text-align: left; font-weight:bold;">APPLICANT / PASSPORT INFORMATION</div>
+            <div style="font-family: Arial, sans-serif; font-size: 13px; color: #555; margin-bottom: 20px; text-align: left;">Refer to your <b>passport</b> and enter all information in the same format.</div>
+            <form>
+                <div class="form-group">
+                    <label for="familyName">Family Name</label>
+                    <input type="text" id="familyName" name="familyName">
+                </div>
+                <div class="form-group">
+                    <label for="givenName">First (Given) Name</label>
+                    <input type="text" id="givenName" name="givenName">
+                </div>
+                <div class="form-group">
+                    <label for="passportNumber">Passport Number</label>
+                    <input type="text" id="passportNumber" name="passportNumber">
+                </div>
+                <div class="form-group">
+                    <label for="issuanceCountry">Issuance Country</label>
+                    <input type="text" id="issuanceCountry" name="issuanceCountry">
+                </div>
+                <div class="form-group">
+                    <label>Issuance Date</label>
+                    <div class="date-select-group">
+                        <select name="issuanceDay">
+                            <option value="">Day ▼</option>
+                            <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}</option>`);</script>
+                        </select>
+                        <select name="issuanceMonth">
+                            <option value="">Month ▼</option>
+                            <option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                        </select>
+                        <select name="issuanceYear">
+                            <option value="">Year ▼</option>
+                            <script>for(let y=2026;y>=2010;y--) document.write(`<option value="${y}">${y}</option>`);</script>
+                        </select>
+                    </div>
+                </div>
+                <div class="system-button-group">
+                    <button type="button" class="sys-btn btn-secondary" onclick="openTab('hub')">이전</button>
+                    <button type="button" class="sys-btn btn-primary" onclick="alert('답안이 안전하게 저장되었습니다.')">답안저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="tab_24_20" class="tab-content">
+        <div class="page-container" style="max-width:600px;">
+            <div class="question-title">
+                [문제20] (작업형) “NIA Money” 아이콘을 누르고 작업을 시작합니다. NIA Money에 등록한 YOUNG 은행의 계좌에서 1만 엔(JPY)을 환전(충전) 하려고 합니다. 간편 비밀번호는 「864375」 입니다. 외화 머니 충전 완료 후 ‘홈으로’ 단추를 눌러 작업을 완료합니다.
+            </div>
+            <div class="phone-screen active" id="p24_20_step1">
+                <div class="app-header" style="background:#2b2d42;">스마트 홈</div>
+                <div class="app-content">
+                    <p style="font-size:13px; color:#666; margin-bottom:25px;">아래 NIA Money 앱을 실행하세요.</p>
+                    <div class="nia-icon" onclick="nextStep24_20(2)">
+                        <span>NIA</span>Money
+                    </div>
+                </div>
+            </div>
+            <div class="phone-screen" id="p24_20_step2">
+                <div class="app-header" style="background-color: #00b4d8;">NIA 외화 머니</div>
+                <div class="app-content" style="justify-content: flex-start; padding-top:25px;">
+                    <p style="font-size:14px; text-align:left; width:90%; font-weight:bold; margin-bottom:15px;">환전하실 통화를 선택하세요.</p>
+                    <div class="menu-card" onclick="nextStep24_20(3)">
+                        <span style="font-size:20px; margin-right:5px;">🇯🇵</span> <b>일본 엔화 (JPY) 환전하기</b>
+                        <span style="float:right; color:#aaa;">&gt;</span>
+                    </div>
+                    <div class="menu-card" style="opacity:0.5; cursor:default;">
+                        <span style="font-size:20px; margin-right:5px;">🇺🇸</span> 미국 달러 (USD) 환전하기
+                        <span style="float:right; color:#aaa;">&gt;</span>
+                    </div>
+                </div>
+            </div>
+            <div class="phone-screen" id="p24_20_step3">
+                <div class="app-header" style="background-color: #00b4d8;">환전 금액 입력</div>
+                <div class="app-content" style="justify-content: flex-start; padding-top:25px;">
+                    <p style="font-size:14px; font-weight:bold; width:100%; text-align:left;">얼마를 환전(충전)할까요?</p>
+                    <div style="background:#fff; border:1px solid #00b4d8; width:100%; padding:15px; box-sizing:border-box; border-radius:8px; text-align:right; font-size:20px; font-weight:bold; margin-top:10px; color:#00b4d8;">
+                        10,000 <span style="font-size:14px; color:#333;">JPY (엔)</span>
+                    </div>
+                    <p style="font-size:12px; color:#ff4757; text-align:left; width:100%; margin-top:8px;">※ 지문 지시사항: 1만 엔 선택</p>
+                    <button class="action-btn" onclick="nextStep24_20(4)">입력 완료</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p24_20_step4">
+                <div class="app-header" style="background-color: #00b4d8;">충전 내용 확인</div>
+                <div class="app-content" style="justify-content: flex-start; padding-top:25px;">
+                    <p style="font-size:14px; font-weight:bold; width:100%; text-align:left; margin-bottom:15px;">신청 내용을 확인해 주세요.</p>
+                    <div style="background:white; width:100%; border:1px solid #eee; border-radius:10px; padding:15px; box-sizing:border-box; text-align:left; font-size:13px; line-height:2.0;">
+                        • <b>출금 계좌:</b> <span style="color:#00b4d8; font-weight:bold;">YOUNG 은행</span> (***-****)<br>
+                        • <b>충전 통화:</b> 일본 엔화 (JPY)<br>
+                        • <b>신청 금액:</b> 10,000 엔
+                    </div>
+                    <button class="action-btn" onclick="nextStep24_20(5)">외화 머니 충전하기</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p24_20_step5">
+                <div class="app-header" style="background-color: #00b4d8;">간편 비밀번호 입력</div>
+                <div class="app-content" style="padding: 20px 0 0 0;">
+                    <p style="font-size:14px; font-weight:bold;">비밀번호 6자리를 입력하세요.</p>
+                    <p style="font-size:12px; color:#6c757d; margin-top:4px;">지정 암호: <b style="color:#ff4757;">864375</b></p>
+                    <div class="pass-dots">
+                        <div class="dot" id="p24_dot1"></div><div class="dot" id="p24_dot2"></div><div class="dot" id="p24_dot3"></div>
+                        <div class="dot" id="p24_dot4"></div><div class="dot" id="p24_dot5"></div><div class="dot" id="p24_dot6"></div>
+                    </div>
+                    <div class="keypad">
+                        <script>
+                            for(let i=1; i<=9; i++) { document.write(`<button type="button" class="key-btn" onclick="pressKey24_20(${i})">${i}</button>`); }
+                        </script>
+                        <button type="button" class="key-btn" onclick="resetKey24_20()">초기화</button>
+                        <button type="button" class="key-btn" onclick="pressKey24_20(0)">0</button>
+                        <button type="button" class="key-btn" onclick="backspaceKey24_20()">←</button>
+                    </div>
+                </div>
+            </div>
+            <div class="phone-screen" id="p24_20_step6">
+                <div class="app-header" style="background-color: #00b4d8;">안전하게 처리 중</div>
+                <div class="app-content">
+                    <div class="spinner"></div>
+                    <p style="font-size:14px; font-weight:bold;">YOUNG 은행에서 출금하여<br>엔화로 환전하고 있습니다.</p>
+                </div>
+            </div>
+            <div class="phone-screen" id="p24_20_step7">
+                <div class="app-header" style="background-color: #00b4d8;">충전 완료</div>
+                <div class="app-content">
+                    <div style="font-size:36px; margin-bottom:10px;">🎉</div>
+                    <p style="font-size:15px; font-weight:bold; color:#00b4d8;">10,000 JPY 충전 완료!</p>
+                    <p style="font-size:12px; color:#666; margin-top:5px; line-height:1.5;">
+                        YOUNG 은행 계좌에서 정상 출금되어<br>외화지갑에 보관되었습니다.
+                    </p>
+                    <button class="action-btn" style="background-color:#2b2d42; margin-top:30px;" onclick="nextStep24_20(8)">홈으로</button>
+                </div>
+            </div>
+            <div class="phone-screen" id="p24_20_step8">
+                <div class="app-header" style="background:#1a3c6c;">과제 종료</div>
+                <div class="app-content">
+                    <div style="font-size:40px; margin-bottom:10px;">✅</div>
+                    <h3 style="margin:0 0 10px 0; color:#1a3c6c;">작업 완료!</h3>
+                    <p style="font-size:13px; color:#555; line-height:1.6; word-break:keep-all;">
+                        NIA Money 외화 충전 모의 실습을<br>성공적으로 마쳤습니다.<br>
+                        하단의 <strong>[답안저장]</strong> 버튼을 클릭하세요.
+                    </p>
+                </div>
+            </div>
+            <div class="system-button-group">
+                <button type="button" class="sys-btn btn-secondary" onclick="openTab('hub')">이전</button>
+                <button type="button" class="sys-btn btn-primary" onclick="alert('답안이 안전하게 저장되었습니다.')">답안저장</button>
+                <button type="button" class="sys-btn btn-info" onclick="resetTask24_20()">초기화</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab_24_21" class="tab-content">
+        <div class="page-container">
+            <div class="question-title">
+                [문제21] (실무형) 홍길동님은 정부24에서 홍길동님 가족의 주민등록등본을 신청하여 집에서 프린터로 출력하려고 합니다. 최근 5년 동안의 주소 변동사항을 포함하여 아래의 정보가 표기되도록 발급 문서에 표시할 정보를 선택하여 작업을 완성하십시오.
+            </div>
+            <h3 style="text-align:left;">주민등록표(등본)</h3>
+            <table class="doc-table">
+                <tr>
+                    <th style="width: 20%;">세대주 성명(한자)</th>
+                    <td style="width: 30%;">홍길동 (洪吉童)</td>
+                    <th style="width: 25%;">세대구성 사유 및 일자</th>
+                    <td style="width: 25%;">2010-09-10</td>
+                </tr>
+                <tr>
+                    <th>주소</th>
+                    <td colspan="3" style="text-align: left; padding-left: 15px;">
+                        <strong>현주소:</strong> 대구광역시 동구 첨단로 53, 101동-101호<br>
+                        <span style="color: #666; font-size: 11px;">발생일 / 신고일 : 2016-06-01 / 2016-06-01 (변동사유: 거주자)</span>
+                    </td>
+                </tr>
+                <tr><td colspan="4" style="background-color: #f8fafc; color: #64748b; font-weight: bold;">= 공 란 =</td></tr>
+            </table>
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">번호</th>
+                        <th style="width: 15%;">세대주관계</th>
+                        <th style="width: 35%;">성명(한자)<br>주민등록번호</th>
+                        <th style="width: 25%;">발생일 / 신고일<br>등록상태</th>
+                        <th style="width: 15%;">변동사유</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>본인</td><td>홍길동 (洪吉童)<br>690301-1******</td><td>-<br>거주자</td><td>-</td></tr>
+                    <tr><td>2</td><td>배우자</td><td>이세희 (李世熙)<br>730815-2345678</td><td>-<br>거주자</td><td>-</td></tr>
+                    <tr><td>3</td><td>자</td><td>홍수아 (洪秀雅)<br>111003-4123456</td><td>-<br>거주자</td><td>-</td></tr>
+                </tbody>
+            </table>
+            <div class="select-form-box">
+                <div style="font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 5px; color: #000;">주민등록등본 발급형태 선택(선택발급)</div>
+                <div style="font-size: 12px; color: #555; margin-bottom: 25px;">※ 발급 문서에 표시할 정보를 선택하세요.</div>
+                <div class="form-row">
+                    <div class="form-row-title">과거의 주소 변동사항</div>
+                    <div class="form-row-content">
+                        <label><input type="radio" name="address_option"> 과거의 주소 전체</label>
+                        <label><input type="radio" name="address_option"> 직접입력 : 최근 <input type="text" class="inline-input"> 년</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-row-title">세대 구성 정보</div>
+                    <div class="form-row-content">
+                        <label><input type="checkbox" name="generation_info"> 세대 구성 사유</label>
+                        <label><input type="checkbox" name="generation_info"> 세대 구성 일자</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-row-title">세대 구성원 정보</div>
+                    <div class="form-row-content">
+                        <label><input type="checkbox" name="member_info"> 세대주와의 관계</label>
+                        <label><input type="checkbox" name="member_info"> 동거인</label>
+                        <label><input type="checkbox" name="member_info"> 교부대상자 외 세대주, 세대원, 외국인 등의 이름</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-row-title">주민등록번호 뒷자리</div>
+                    <div class="form-row-content">
+                        <label><input type="radio" name="jumin_option"> 본인</label>
+                        <label><input type="radio" name="jumin_option"> 세대원</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-row-title">수령방법</div>
+                    <div class="form-row-content">
+                        <label><input type="radio" name="delivery_option"> 온라인발급(본인출력)</label>
+                        <label><input type="radio" name="delivery_option"> 온라인발급(전자문서지갑)</label>
+                        <label><input type="radio" name="delivery_option"> 등기보통우편</label>
+                    </div>
+                </div>
+            </div>
+            <div class="system-button-group">
+                <button type="button" class="sys-btn btn-secondary" onclick="openTab('hub')">이전</button>
+                <button type="button" class="sys-btn btn-primary" onclick="alert('답안이 안전하게 저장되었습니다.')">답안저장</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // [공통] 상단 탭 제어 스크립트
+        function openTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            // 버튼 상태 활성화 찾기
+            event.currentTarget.classList.add('active');
+            
+            // 탭 진입 시 내부 리사이즈나 초기 세팅 필요시 처리 가능
+            if(tabId === 'tab_25_20') reset25_20();
+            if(tabId === 'tab_24_20') resetTask24_20();
+        }
+
+        // ==================== [25_20 스크립트] ====================
+        function nextStep25_20(stepNumber) {
+            for(let i=1; i<=10; i++){
+                let screen = document.getElementById('p25_20_step' + i);
+                if(screen) screen.classList.remove('active');
+            }
+            
+            const nextScreen = document.getElementById('p25_20_step' + stepNumber);
+            if (nextScreen) {
+                nextScreen.classList.add('active');
+                if (stepNumber === 5) {
+                    setTimeout(function() { nextStep25_20(6); }, 1500);
+                }
+            }
+        }
+        function reset25_20() {
+            nextStep25_20(1);
+        }
+
+        // ==================== [24_20 스크립트] ====================
+        let inputCount24_20 = 0;
+        function nextStep24_20(stepNumber) {
+            for(let i=1; i<=8; i++){
+                let screen = document.getElementById('p24_20_step' + i);
+                if(screen) screen.classList.remove('active');
+            }
+            
+            const nextScreen = document.getElementById('p24_20_step' + stepNumber);
+            if (nextScreen) {
+                nextScreen.classList.add('active');
+                if (stepNumber === 6) {
+                    setTimeout(function() { nextStep24_20(7); }, 1500);
+                }
+            }
+        }
+        function pressKey24_20(num) {
+            if(inputCount24_20 < 6) {
+                inputCount24_20++;
+                document.getElementById('p24_dot' + inputCount24_20).classList.add('active');
+                if(inputCount24_20 === 6) {
+                    setTimeout(function() { nextStep24_20(6); }, 300);
+                }
+            }
+        }
+        function resetKey24_20() {
+            inputCount24_20 = 0;
+            for(let i=1; i<=6; i++) {
+                document.getElementById('p24_dot' + i).classList.remove('active');
+            }
+        }
+        function backspaceKey24_20() {
+            if(inputCount24_20 > 0) {
+                document.getElementById('p24_dot' + inputCount24_20).classList.remove('active');
+                inputCount24_20--;
+            }
+        }
+        function resetTask24_20() {
+            resetKey24_20();
+            nextStep24_20(1);
+        }
+    </script>
+</body>
+</html>
